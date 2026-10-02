@@ -1,0 +1,1052 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>THE INTERVAL · Service Interval Intelligence</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ============ BASE ============ */
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#04060c;
+  --txt:#dbeafe;
+  --muted:#7f92bb;
+  --line:rgba(120,200,255,.14);
+  --accent:#22d3ee;
+  --accent2:#8b5cf6;
+}
+html{scroll-behavior:smooth}
+body{
+  font-family:'Rajdhani',system-ui,sans-serif;
+  background:var(--bg);
+  color:var(--txt);
+  min-height:100vh;
+  overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+body.locked{overflow:hidden}
+canvas#bg{position:fixed;inset:0;z-index:0;pointer-events:none}
+.grid-overlay{
+  position:fixed;inset:0;z-index:1;pointer-events:none;
+  background-image:
+    linear-gradient(rgba(90,180,255,.055) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(90,180,255,.055) 1px,transparent 1px);
+  background-size:64px 64px,64px 64px;
+  animation:gridMove 16s linear infinite;
+  -webkit-mask-image:radial-gradient(ellipse 90% 60% at 50% 0%,#000 15%,transparent 80%);
+  mask-image:radial-gradient(ellipse 90% 60% at 50% 0%,#000 15%,transparent 80%);
+}
+@keyframes gridMove{to{background-position:64px 64px,64px 64px}}
+.vignette{position:fixed;inset:0;z-index:1;pointer-events:none;
+  background:radial-gradient(ellipse at 50% 120%,rgba(60,120,255,.14),transparent 60%),
+             radial-gradient(ellipse at 50% -20%,rgba(140,80,255,.12),transparent 55%);}
+
+/* ============ TOPBAR ============ */
+.topbar{
+  position:relative;z-index:5;
+  display:flex;justify-content:space-between;align-items:center;gap:14px;
+  padding:18px clamp(16px,4vw,48px);
+  border-bottom:1px solid rgba(120,200,255,.08);
+  backdrop-filter:blur(6px);
+}
+.brandmark{
+  font-family:'Orbitron',sans-serif;font-weight:900;letter-spacing:.22em;
+  font-size:.82rem;display:flex;align-items:center;gap:10px;
+  color:#eaf4ff;text-shadow:0 0 18px rgba(56,189,248,.6);
+}
+.brandmark .pulse{
+  width:9px;height:9px;border-radius:50%;background:#22d3ee;
+  box-shadow:0 0 12px #22d3ee;animation:pulse 1.6s ease-in-out infinite;
+}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.35;transform:scale(.7)}}
+.status{
+  font-size:.7rem;letter-spacing:.2em;color:var(--muted);
+  border:1px solid rgba(120,200,255,.16);border-radius:999px;padding:6px 14px;
+  font-weight:600;
+}
+
+/* ============ HERO ============ */
+.hero{
+  position:relative;z-index:5;text-align:center;
+  padding:clamp(48px,9vw,110px) 20px clamp(28px,5vw,54px);
+}
+.eyebrow{
+  font-size:.72rem;letter-spacing:.42em;color:#5ed4ff;font-weight:700;
+  margin-bottom:18px;opacity:.85;
+}
+.hero h1{
+  font-family:'Orbitron',sans-serif;font-weight:900;
+  font-size:clamp(2.1rem,8.5vw,6.2rem);
+  letter-spacing:.06em;line-height:1;
+  background:linear-gradient(180deg,#ffffff 0%,#9fe4ff 42%,#8b5cf6 100%);
+  background-size:100% 220%;
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  filter:drop-shadow(0 0 42px rgba(56,189,248,.35));
+  animation:shimmer 6s ease-in-out infinite;
+}
+@keyframes shimmer{0%,100%{background-position:0 0}50%{background-position:0 100%}}
+.lede{
+  max-width:620px;margin:22px auto 0;color:#93a7cc;font-size:1.02rem;
+  line-height:1.6;font-weight:500;
+}
+
+/* ============ GRID ============ */
+.section-label{
+  position:relative;z-index:5;
+  display:flex;align-items:center;gap:16px;
+  padding:0 clamp(16px,4vw,48px);margin:26px 0 20px;
+  font-family:'Orbitron',sans-serif;font-size:.68rem;letter-spacing:.32em;color:#6fd6ff;
+}
+.section-label::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,rgba(120,200,255,.35),transparent)}
+
+.brand-grid{
+  position:relative;z-index:5;
+  display:grid;gap:18px;
+  grid-template-columns:repeat(auto-fit,minmax(190px,1fr));
+  padding:0 clamp(16px,4vw,48px);
+  max-width:1500px;margin:0 auto;
+}
+
+.brand-card{
+  position:relative;overflow:hidden;
+  background:linear-gradient(160deg,rgba(16,24,42,.86),rgba(7,11,22,.92));
+  border:1px solid rgba(120,200,255,.13);
+  border-radius:18px;
+  padding:26px 16px 22px;
+  display:flex;flex-direction:column;align-items:center;gap:10px;
+  cursor:pointer;font-family:inherit;color:inherit;text-align:center;
+  opacity:0;
+  animation:cardIn .65s cubic-bezier(.2,.9,.2,1) forwards;
+  transition:transform .38s cubic-bezier(.2,.9,.2,1),border-color .3s,box-shadow .38s;
+}
+@keyframes cardIn{from{opacity:0;transform:translateY(34px) scale(.94)}to{opacity:1;transform:none}}
+.brand-card::before{
+  content:'';position:absolute;inset:-40% -40% auto -40%;height:180px;
+  background:radial-gradient(circle at 50% 0%,var(--accent),transparent 68%);
+  opacity:0;transition:opacity .45s;filter:blur(28px);
+}
+.brand-card:hover::before{opacity:.32}
+.brand-card:hover{
+  transform:translateY(-10px) scale(1.025);
+  border-color:var(--accent);
+  box-shadow:0 26px 55px -24px var(--accent),0 0 24px -12px var(--accent) inset;
+}
+.brand-card:active{transform:translateY(-4px) scale(.99)}
+
+.corner{position:absolute;width:14px;height:14px;border:1.5px solid var(--accent);opacity:.5;transition:.35s}
+.corner.tl{top:9px;left:9px;border-right:0;border-bottom:0}
+.corner.tr{top:9px;right:9px;border-left:0;border-bottom:0}
+.corner.bl{bottom:9px;left:9px;border-right:0;border-top:0}
+.corner.br{bottom:9px;right:9px;border-left:0;border-top:0}
+.brand-card:hover .corner{opacity:1;width:20px;height:20px}
+
+.logo-wrap{
+  position:relative;width:96px;height:96px;display:grid;place-items:center;
+  border-radius:50%;
+  background:radial-gradient(circle,rgba(255,255,255,.07),rgba(255,255,255,.01) 70%);
+  border:1px solid rgba(120,200,255,.14);
+  transition:.4s;
+}
+.brand-card:hover .logo-wrap{
+  border-color:var(--accent);
+  box-shadow:0 0 34px -6px var(--accent);
+  transform:rotate(-4deg) scale(1.06);
+}
+.logo-wrap::after{
+  content:'';position:absolute;inset:-6px;border-radius:50%;
+  border:1px dashed var(--accent);opacity:0;transition:opacity .4s;
+  animation:spin 9s linear infinite;
+}
+.brand-card:hover .logo-wrap::after{opacity:.55}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.logo-wrap img{
+  width:58px;height:58px;object-fit:contain;
+  filter:drop-shadow(0 0 12px rgba(140,200,255,.5));
+  transition:transform .4s,filter .4s;
+}
+.brand-card:hover .logo-wrap img{transform:scale(1.1);filter:drop-shadow(0 0 20px var(--accent))}
+.no-logo img{display:none}
+.no-logo::before{
+  content:attr(data-initials);
+  font-family:'Orbitron',sans-serif;font-weight:900;font-size:1.7rem;
+  background:linear-gradient(180deg,#fff,var(--accent));
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  position:absolute;
+}
+
+.brand-card h3{
+  font-family:'Orbitron',sans-serif;font-size:.86rem;font-weight:700;
+  letter-spacing:.16em;margin-top:6px;color:#eef6ff;
+}
+.brand-card .tag{
+  font-size:.72rem;letter-spacing:.14em;color:var(--muted);font-weight:600;
+  text-transform:uppercase;
+}
+.scanline{
+  position:absolute;left:0;right:0;height:2px;top:-10%;opacity:0;
+  background:linear-gradient(90deg,transparent,var(--accent),transparent);
+}
+.brand-card:hover .scanline{opacity:1;animation:scan 1.5s linear infinite}
+@keyframes scan{0%{top:-4%}100%{top:104%}}
+
+/* ============ LEGEND ============ */
+.legend{
+  position:relative;z-index:5;
+  max-width:1500px;margin:52px auto 0;padding:0 clamp(16px,4vw,48px);
+  display:flex;flex-wrap:wrap;gap:12px;justify-content:center;
+}
+.legend .item{
+  display:flex;align-items:center;gap:9px;
+  border:1px solid rgba(120,200,255,.14);border-radius:999px;
+  padding:8px 16px;font-size:.74rem;letter-spacing:.16em;font-weight:600;
+  background:rgba(10,18,34,.6);color:#a8bbdd;
+}
+.legend .sw{width:9px;height:9px;border-radius:2px;box-shadow:0 0 10px currentColor}
+
+footer{
+  position:relative;z-index:5;text-align:center;
+  padding:64px 20px 44px;color:#54658a;font-size:.74rem;letter-spacing:.18em;
+}
+footer b{color:#7fd8ff}
+
+/* ============ BOOT OVERLAY ============ */
+.boot{
+  position:fixed;inset:0;z-index:100;
+  display:grid;place-items:center;gap:0;
+  background:radial-gradient(circle at 50% 45%,rgba(10,22,44,.97),rgba(2,4,10,.995));
+  opacity:0;pointer-events:none;transition:opacity .38s ease;
+}
+.boot.active{opacity:1;pointer-events:auto}
+.boot-inner{display:flex;flex-direction:column;align-items:center;gap:26px;position:relative}
+
+.rings{position:absolute;top:50%;left:50%;width:0;height:0}
+.rings span{
+  position:absolute;top:0;left:0;width:150px;height:150px;margin:-75px 0 0 -75px;
+  border:1px solid var(--accent);border-radius:50%;opacity:0;
+}
+.boot.active .rings span{animation:ringOut 1.7s cubic-bezier(.2,.7,.3,1) infinite}
+.boot.active .rings span:nth-child(2){animation-delay:.35s}
+.boot.active .rings span:nth-child(3){animation-delay:.7s}
+@keyframes ringOut{
+  0%{transform:scale(.35);opacity:.9;border-width:2px}
+  100%{transform:scale(2.1);opacity:0;border-width:.5px}
+}
+
+.boot-logo{position:relative;width:150px;height:150px;display:grid;place-items:center}
+.boot-logo img{width:110px;height:110px;object-fit:contain}
+.boot.active .boot-logo img{
+  animation:logoPop .95s cubic-bezier(.16,.9,.24,1) both;
+  filter:drop-shadow(0 0 34px var(--accent));
+}
+@keyframes logoPop{
+  0%{transform:scale(.25) rotate(-32deg);opacity:0;filter:blur(16px) drop-shadow(0 0 0 var(--accent))}
+  55%{transform:scale(1.18) rotate(6deg);opacity:1;filter:blur(0) drop-shadow(0 0 40px var(--accent))}
+  75%{transform:scale(.97) rotate(-2deg)}
+  100%{transform:scale(1) rotate(0);filter:blur(0) drop-shadow(0 0 26px var(--accent))}
+}
+.boot.active .boot-logo::after{
+  content:'';position:absolute;inset:0;border-radius:50%;
+  background:conic-gradient(from 0deg,transparent 0 70%,var(--accent) 85%,transparent 100%);
+  animation:spin 1.1s linear infinite;opacity:.65;mix-blend-mode:screen;
+  -webkit-mask:radial-gradient(circle,transparent 58%,#000 60%);
+  mask:radial-gradient(circle,transparent 58%,#000 60%);
+}
+
+.boot-name{
+  font-family:'Orbitron',sans-serif;font-weight:900;
+  font-size:clamp(1.2rem,4.6vw,2.2rem);letter-spacing:.36em;
+  color:#fff;text-shadow:0 0 26px var(--accent);
+}
+.boot.active .boot-name{animation:typeIn .8s .18s cubic-bezier(.2,.9,.2,1) both}
+@keyframes typeIn{from{letter-spacing:1.2em;opacity:0;filter:blur(8px)}to{letter-spacing:.36em;opacity:1;filter:blur(0)}}
+.boot-sub{
+  font-size:.7rem;letter-spacing:.4em;color:var(--muted);margin-top:-16px;font-weight:600;
+}
+.boot-bar{
+  width:min(320px,62vw);height:3px;border-radius:99px;overflow:hidden;
+  background:rgba(120,200,255,.14);
+}
+.boot-bar i{
+  display:block;height:100%;width:0;
+  background:linear-gradient(90deg,var(--accent),var(--accent2));
+  box-shadow:0 0 16px var(--accent);
+}
+.boot.active .boot-bar i{animation:fill 1.5s cubic-bezier(.4,0,.2,1) forwards}
+@keyframes fill{to{width:100%}}
+
+/* ============ PANEL ============ */
+.panel{
+  position:fixed;inset:0;z-index:80;overflow-y:auto;overscroll-behavior:contain;
+  background:radial-gradient(ellipse at 50% -10%,rgba(20,38,70,.9),rgba(3,5,11,.985) 60%);
+  backdrop-filter:blur(14px);
+  opacity:0;pointer-events:none;transform:translateY(38px);
+  transition:opacity .45s ease,transform .55s cubic-bezier(.16,.9,.24,1);
+}
+.panel.active{opacity:1;pointer-events:auto;transform:none}
+.panel-inner{
+  max-width:1440px;margin:0 auto;padding:26px clamp(16px,4vw,48px) 90px;
+}
+.panel-top{display:flex;flex-direction:column;gap:22px;margin-bottom:34px}
+.back{
+  align-self:flex-start;font-family:'Orbitron',sans-serif;font-size:.66rem;
+  letter-spacing:.24em;color:#8fd8ff;background:rgba(20,40,70,.5);
+  border:1px solid rgba(120,200,255,.24);border-radius:999px;
+  padding:10px 20px;cursor:pointer;transition:.28s;font-weight:700;
+}
+.back:hover{background:var(--accent);color:#04060c;border-color:var(--accent);box-shadow:0 0 26px -6px var(--accent)}
+
+.brand-head{display:flex;align-items:center;gap:22px;flex-wrap:wrap}
+.head-logo{
+  position:relative;width:96px;height:96px;border-radius:22px;display:grid;place-items:center;
+  background:linear-gradient(150deg,rgba(255,255,255,.08),rgba(255,255,255,.015));
+  border:1px solid var(--accent);
+  box-shadow:0 0 44px -12px var(--accent),0 0 30px -18px var(--accent) inset;
+  animation:headIn .7s cubic-bezier(.2,.9,.2,1) both;
+}
+@keyframes headIn{from{transform:scale(.6) rotate(-14deg);opacity:0}to{transform:none;opacity:1}}
+.head-logo img{width:58px;height:58px;object-fit:contain;filter:drop-shadow(0 0 14px var(--accent))}
+.head-logo.no-logo::before{font-size:1.7rem}
+.brand-head h2{
+  font-family:'Orbitron',sans-serif;font-size:clamp(1.5rem,4.4vw,2.7rem);
+  font-weight:900;letter-spacing:.1em;
+  background:linear-gradient(120deg,#fff,var(--accent) 60%,var(--accent2));
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.brand-head p{color:#8ea3c9;font-size:.86rem;letter-spacing:.2em;margin-top:6px;font-weight:600;text-transform:uppercase}
+
+.panel-body{display:grid;grid-template-columns:minmax(260px,340px) 1fr;gap:28px;align-items:start}
+@media(max-width:900px){.panel-body{grid-template-columns:1fr}}
+
+.block{
+  border:1px solid rgba(120,200,255,.13);border-radius:16px;
+  background:linear-gradient(160deg,rgba(14,22,40,.8),rgba(6,10,20,.7));
+  padding:20px;margin-bottom:18px;
+}
+.block h4{
+  font-family:'Orbitron',sans-serif;font-size:.66rem;letter-spacing:.26em;
+  color:#7fd8ff;margin-bottom:14px;display:flex;align-items:center;gap:9px;
+}
+.dotmark{width:7px;height:7px;border-radius:50%;background:var(--accent);box-shadow:0 0 10px var(--accent)}
+.notes li{
+  list-style:none;font-size:.9rem;line-height:1.55;color:#a9bcdd;
+  padding-left:18px;position:relative;margin-bottom:10px;
+}
+.notes li::before{
+  content:'▸';position:absolute;left:0;color:var(--accent);font-size:.8rem;
+}
+.branch{border-top:1px dashed rgba(120,200,255,.14);padding-top:14px;margin-top:14px}
+.branch:first-of-type{border-top:0;padding-top:0;margin-top:0}
+.branch-name{
+  font-family:'Orbitron',sans-serif;font-size:.68rem;letter-spacing:.16em;
+  color:#e7f2ff;margin-bottom:10px;
+}
+.branch ul{list-style:none}
+.branch li{
+  display:flex;justify-content:space-between;gap:12px;
+  font-size:.84rem;color:#93a7cc;padding:6px 0;
+  border-bottom:1px solid rgba(120,200,255,.06);
+}
+.branch li:last-child{border-bottom:0}
+.branch li b{color:var(--accent);font-family:'Orbitron',sans-serif;font-size:.76rem;letter-spacing:.06em}
+.warn{
+  border:1px solid rgba(255,190,80,.3);background:rgba(255,180,60,.07);
+  color:#ffcb6b;border-radius:12px;padding:12px 15px;font-size:.78rem;
+  letter-spacing:.06em;line-height:1.5;
+}
+
+/* variant bar */
+.variant-bar{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px}
+.vchip{
+  font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.76rem;
+  letter-spacing:.12em;text-transform:uppercase;cursor:pointer;
+  padding:9px 16px;border-radius:10px;color:#9fb4d8;
+  background:rgba(14,24,44,.7);border:1px solid rgba(120,200,255,.16);
+  transition:.26s;
+}
+.vchip:hover{color:#fff;border-color:var(--accent)}
+.vchip.on{
+  background:linear-gradient(120deg,var(--accent),var(--accent2));
+  color:#04060c;border-color:transparent;box-shadow:0 0 24px -8px var(--accent);
+}
+
+/* controls */
+.controls{display:flex;flex-wrap:wrap;gap:14px;justify-content:space-between;margin-bottom:16px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{
+  font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.72rem;
+  letter-spacing:.14em;cursor:pointer;padding:8px 15px;border-radius:999px;
+  background:rgba(14,24,44,.7);color:#8ea3c9;border:1px solid rgba(120,200,255,.16);
+  transition:.26s;
+}
+.chip:hover{color:#fff;border-color:var(--accent)}
+.chip.on{background:var(--accent);color:#04060c;border-color:transparent;box-shadow:0 0 22px -6px var(--accent)}
+
+.lookup{display:flex;gap:8px}
+.lookup input{
+  width:130px;padding:9px 14px;border-radius:10px;font-family:'Rajdhani',sans-serif;
+  font-weight:600;font-size:.86rem;letter-spacing:.06em;
+  background:rgba(10,18,34,.85);border:1px solid rgba(120,200,255,.2);color:#e7f2ff;outline:none;
+  transition:.26s;
+}
+.lookup input:focus{border-color:var(--accent);box-shadow:0 0 20px -6px var(--accent)}
+.lookup input::placeholder{color:#5f7098}
+.lookup button{
+  font-family:'Orbitron',sans-serif;font-size:.62rem;letter-spacing:.16em;font-weight:700;
+  padding:9px 16px;border-radius:10px;cursor:pointer;border:1px solid var(--accent);
+  background:transparent;color:var(--accent);transition:.26s;
+}
+.lookup button:hover{background:var(--accent);color:#04060c;box-shadow:0 0 24px -6px var(--accent)}
+
+.banner{
+  display:none;margin-bottom:18px;padding:14px 18px;border-radius:12px;
+  font-size:.9rem;letter-spacing:.05em;color:#cfe1ff;
+  border:1px solid var(--accent);background:rgba(20,50,90,.35);
+  box-shadow:0 0 34px -14px var(--accent);
+}
+.banner.on{display:block;animation:bannerIn .45s cubic-bezier(.2,.9,.2,1) both}
+@keyframes bannerIn{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:none}}
+.banner .bk{
+  font-family:'Orbitron',sans-serif;font-size:.6rem;letter-spacing:.22em;
+  color:var(--accent);margin-right:8px;
+}
+.banner b{font-family:'Orbitron',sans-serif;font-size:.84rem;color:#fff}
+
+.sched-head{
+  display:grid;grid-template-columns:120px 1fr 90px;gap:14px;
+  padding:0 18px 10px;font-family:'Orbitron',sans-serif;
+  font-size:.58rem;letter-spacing:.24em;color:#5f7098;
+}
+.sched{display:flex;flex-direction:column;gap:9px}
+.row{
+  display:grid;grid-template-columns:120px 1fr 90px;align-items:center;gap:14px;
+  padding:13px 18px;border-radius:12px;
+  background:linear-gradient(90deg,rgba(255,255,255,.035),rgba(255,255,255,.005));
+  border:1px solid rgba(120,200,255,.08);
+  border-left:3px solid var(--c);
+  transition:transform .3s cubic-bezier(.2,.9,.2,1),background .3s,box-shadow .3s;
+  animation:rowIn .45s cubic-bezier(.2,.9,.2,1) both;
+}
+@keyframes rowIn{from{opacity:0;transform:translateX(-18px)}to{opacity:1;transform:none}}
+.row:hover{transform:translateX(8px);background:rgba(255,255,255,.06);box-shadow:0 0 26px -14px var(--c)}
+.row.next{box-shadow:0 0 0 1px var(--c),0 0 36px -12px var(--c)}
+.row-km{
+  font-family:'Orbitron',sans-serif;font-weight:700;font-size:.92rem;color:#eaf4ff;
+  letter-spacing:.04em;
+}
+.row-km small{font-size:.56rem;color:#5f7098;margin-left:5px;letter-spacing:.16em}
+.row-mid{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.row-type{
+  font-size:.74rem;font-weight:700;letter-spacing:.2em;color:var(--c);
+  text-shadow:0 0 14px var(--c);
+}
+.tagbelt{
+  font-size:.56rem;font-weight:700;letter-spacing:.18em;
+  padding:3px 9px;border-radius:999px;
+  color:#ff8fa6;border:1px solid rgba(244,63,94,.5);background:rgba(244,63,94,.12);
+}
+.row-bar{height:3px;border-radius:99px;background:rgba(120,200,255,.1);overflow:hidden}
+.row-bar i{
+  display:block;height:100%;width:38%;border-radius:99px;
+  background:linear-gradient(90deg,var(--c),transparent);
+  box-shadow:0 0 12px var(--c);
+  transition:width .4s;
+}
+.row:hover .row-bar i{width:100%}
+.empty{
+  padding:40px;text-align:center;color:#5f7098;letter-spacing:.16em;
+  border:1px dashed rgba(120,200,255,.16);border-radius:14px;font-size:.82rem;
+}
+
+@media(max-width:620px){
+  .row{grid-template-columns:96px 1fr;gap:10px;padding:12px 14px}
+  .row-bar{display:none}
+  .sched-head{grid-template-columns:96px 1fr}
+  .sched-head span:last-child{display:none}
+  .lookup{width:100%}
+  .lookup input{flex:1;width:auto}
+}
+</style>
+</head>
+<body>
+
+<canvas id="bg"></canvas>
+<div class="grid-overlay"></div>
+<div class="vignette"></div>
+
+<header class="topbar">
+  <div class="brandmark"><span class="pulse"></span> THE INTERVAL</div>
+  <div class="status">SYSTEM ONLINE · 9 MARQUES</div>
+</header>
+
+<section class="hero">
+  <p class="eyebrow">// VEHICLE SERVICE INTELLIGENCE</p>
+  <h1>THE INTERVAL</h1>
+  <p class="lede">Tap a marque to load its service protocol — minor, major, oil and cambelt intervals at a glance.</p>
+</section>
+
+<div class="section-label">SELECT A MARQUE</div>
+<section class="brand-grid" id="brandGrid"></section>
+
+<div class="legend">
+  <div class="item"><span class="sw" style="background:#22d3ee;color:#22d3ee"></span>OIL SERVICE</div>
+  <div class="item"><span class="sw" style="background:#34d399;color:#34d399"></span>MINOR SERVICE</div>
+  <div class="item"><span class="sw" style="background:#f59e0b;color:#f59e0b"></span>MAJOR SERVICE</div>
+  <div class="item"><span class="sw" style="background:#f43f5e;color:#f43f5e"></span>CAMBELT SERVICE</div>
+</div>
+
+<footer>THE INTERVAL · SERVICE PROTOCOL DATABASE · <b>ALWAYS CONFIRM WITH YOUR DEALER</b></footer>
+
+<!-- BOOT ANIMATION -->
+<div class="boot" id="boot">
+  <div class="boot-inner">
+    <div class="rings"><span></span><span></span><span></span></div>
+    <div class="boot-logo"><img alt="" /></div>
+    <div class="boot-name">NISSAN</div>
+    <div class="boot-sub">LOADING PROTOCOL</div>
+    <div class="boot-bar"><i></i></div>
+  </div>
+</div>
+
+<!-- DETAIL PANEL -->
+<div class="panel" id="panel"></div>
+
+<script>
+/* =========================================================
+   DATA GENERATORS
+   ========================================================= */
+const fmt = n => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+
+const TYPE = {
+  oil:     { label:'OIL SERVICE',    color:'#22d3ee' },
+  minor:   { label:'MINOR SERVICE',  color:'#34d399' },
+  major:   { label:'MAJOR SERVICE',  color:'#f59e0b' },
+  cambelt: { label:'CAMBELT SERVICE',color:'#f43f5e' }
+};
+
+/* Nissan — every 10 000 km
+   odd 10k marks = oil ; 20k beat alternates minor/major ; cambelt every 90 000 km */
+function genNissan(max = 260000){
+  const rows = [];
+  for (let km = 10000; km <= max; km += 10000){
+    let type;
+    if (km % 20000 === 0){
+      type = ((km / 20000) % 2 === 1) ? 'minor' : 'major';
+    } else {
+      type = 'oil';
+    }
+    rows.push({ km, type, cambelt: km % 90000 === 0 });
+  }
+  return rows;
+}
+
+/* Renault — every 15 000 km
+   odd 15k marks = oil ; 30k beat alternates minor/major ; cambelt every 60 000 km */
+function genRenault(max = 390000){
+  const rows = [];
+  for (let km = 15000; km <= max; km += 15000){
+    let type;
+    if (km % 30000 === 0){
+      type = ((km / 30000) % 2 === 1) ? 'minor' : 'major';
+    } else {
+      type = 'oil';
+    }
+    rows.push({ km, type, cambelt: km % 60000 === 0 });
+  }
+  return rows;
+}
+
+/* Simple alternating generator */
+function genAlt(step, max, first = 'minor'){
+  const rows = [];
+  let n = 1;
+  for (let km = step; km <= max; km += step, n++){
+    rows.push({ km, type: n % 2 === 1 ? first : (first === 'minor' ? 'major' : 'minor') });
+  }
+  return rows;
+}
+
+/* =========================================================
+   BRAND DATABASE
+   ========================================================= */
+const BRANDS = [
+  {
+    id:'nissan', name:'NISSAN', accent:'#ff2d55', accent2:'#38bdf8',
+    tag:'Every 10 000 km',
+    logo:['https://cdn.simpleicons.org/nissan/ffffff',
+          'https://www.google.com/s2/favicons?domain=nissan.com&sz=256'],
+    notes:[
+      'Cambelt service falls on every 90 000 km.',
+      'After every 90 000 km the cycle returns to a minor service.',
+      'Minor and Major alternate on the 20 000 km beat — oil services fill the odd 10 000 km marks.',
+      'Nissan Tokai runs a 15 000 km interval — see workshop hours.'
+    ],
+    variants:[{ name:'Nissan · 10 000 km interval', schedule: genNissan() }],
+    branches:[
+      { name:'IC AUTO ROODEPOORT', rows:[
+        {label:'Repair Bookings', h:2}, {label:'Minor Service', h:1.5},
+        {label:'Major Service', h:3}, {label:'Cambelt Service', h:5}
+      ]},
+      { name:'IC AUTO KEMPTON PARK', rows:[
+        {label:'Minor Service', h:1.5}, {label:'Major Service', h:3},
+        {label:'Cambelt Service', h:5}
+      ]},
+      { name:'IC AUTO BENONI · Nissan / Datsun', rows:[
+        {label:'Repair Bookings', h:2}, {label:'Minor Service', h:1},
+        {label:'Major Service', h:2}, {label:'Cambelt Service', h:4}
+      ]},
+      { name:'NISSAN TOKAI', rows:[
+        {label:'Minor Service 15/45/75/105 km', h:1.6},
+        {label:'Major Service 30/60/120/150 km', h:2},
+        {label:'Major Service 90/180/270 km', h:4}
+      ]}
+    ]
+  },
+  {
+    id:'renault', name:'RENAULT', accent:'#ffd60a', accent2:'#22d3ee',
+    tag:'Every 15 000 km',
+    logo:['https://cdn.simpleicons.org/renault/ffffff',
+          'https://www.google.com/s2/favicons?domain=renault.com&sz=256'],
+    notes:[
+      'Cambelt service on every 60 000 km.',
+      'After every 60 000 km the cycle returns to a minor service.',
+      'Oil services sit on the odd 15 000 km marks; minor / major alternate on the 30 000 km beat.'
+    ],
+    variants:[{ name:'Renault · 15 000 km interval', schedule: genRenault() }],
+    branches:[
+      { name:'IC AUTO ROODEPOORT', rows:[
+        {label:'Repair Bookings', h:2}, {label:'Minor Service', h:1},
+        {label:'Major Service', h:2}, {label:'Cambelt Service', h:4}
+      ]},
+      { name:'IC AUTO KEMPTON PARK', rows:[
+        {label:'Minor Service', h:1}, {label:'Major Service', h:2},
+        {label:'Cambelt Service', h:4}
+      ]},
+      { name:'IC AUTO BENONI', rows:[
+        {label:'Minor Service', h:1}, {label:'Major Service', h:2},
+        {label:'Cambelt Service', h:4}
+      ]}
+    ]
+  },
+  {
+    id:'mahindra', name:'MAHINDRA', accent:'#ff6a00', accent2:'#ffd60a',
+    tag:'Every 2nd service is major',
+    logo:['https://cdn.simpleicons.org/mahindra/ffffff',
+          'https://www.google.com/s2/favicons?domain=mahindra.com&sz=256'],
+    notes:[
+      'Every 2nd service is a major service.',
+      'Intervals differ per model — pick your model above.'
+    ],
+    variants:[
+      { name:'Pick Up', schedule:[
+        {km:10000,type:'minor'},{km:30000,type:'major'},{km:50000,type:'minor'},
+        {km:70000,type:'major'},{km:90000,type:'minor'}
+      ]},
+      { name:'XUV 3XO / XUV 700', schedule:[
+        {km:10000,type:'minor'},{km:25000,type:'major'},
+        {km:40000,type:'minor'},{km:55000,type:'major'}
+      ]},
+      { name:'Scorpio', schedule:[
+        {km:10000,type:'minor'},{km:30000,type:'major'},{km:50000,type:'minor'},
+        {km:70000,type:'major'},{km:90000,type:'minor'},{km:110000,type:'major'}
+      ]},
+      { name:'Bolero Maxi Truck', schedule:[
+        {km:10000,type:'minor'},{km:20000,type:'major'},{km:30000,type:'minor'},
+        {km:40000,type:'major'},{km:50000,type:'minor'},{km:60000,type:'major'}
+      ]},
+      { name:'XUV 300', schedule:[
+        {km:10000,type:'minor'},{km:20000,type:'major'},{km:30000,type:'minor'},
+        {km:40000,type:'major'},{km:50000,type:'minor'},{km:60000,type:'major'},
+        {km:70000,type:'minor'}
+      ]}
+    ]
+  },
+  {
+    id:'kia', name:'KIA', accent:'#00e5ff', accent2:'#7c5cff',
+    tag:'Every 15 000 km', indicative:true,
+    logo:['https://cdn.simpleicons.org/kia/ffffff',
+          'https://www.google.com/s2/favicons?domain=kia.com&sz=256'],
+    notes:[
+      'Minor and major services alternate on the 15 000 km beat.',
+      'Timing chain / belt inspection typically from 90 000 km.'
+    ],
+    variants:[{ name:'Kia · 15 000 km interval', schedule: genAlt(15000, 150000) }]
+  },
+  {
+    id:'mazda', name:'MAZDA', accent:'#8b7cff', accent2:'#22d3ee',
+    tag:'Every 15 000 km', indicative:true,
+    logo:['https://cdn.simpleicons.org/mazda/ffffff',
+          'https://www.google.com/s2/favicons?domain=mazda.com&sz=256'],
+    notes:[
+      'Minor and major services alternate every 15 000 km.',
+      'SkyActiv engines run a timing chain — no scheduled cambelt.'
+    ],
+    variants:[{ name:'Mazda · 15 000 km interval', schedule: genAlt(15000, 150000) }]
+  },
+  {
+    id:'gwm', name:'GWM', accent:'#ff4d6d', accent2:'#ffd60a',
+    tag:'Every 10 000 km', indicative:true,
+    logo:['https://cdn.simpleicons.org/gwm/ffffff',
+          'https://www.google.com/s2/favicons?domain=gwm-global.com&sz=256',
+          'https://www.google.com/s2/favicons?domain=gwm.com&sz=256'],
+    notes:[
+      '10 000 km interval — suited to mixed urban and load-carrying duty.',
+      'Minor / major alternate on the 20 000 km beat.'
+    ],
+    variants:[{ name:'GWM · 10 000 km interval', schedule: genAlt(10000, 100000) }]
+  },
+  {
+    id:'haval', name:'HAVAL', accent:'#c04cff', accent2:'#22d3ee',
+    tag:'Every 15 000 km', indicative:true,
+    logo:['https://cdn.simpleicons.org/haval/ffffff',
+          'https://www.google.com/s2/favicons?domain=haval.com&sz=256',
+          'https://www.google.com/s2/favicons?domain=gwm-global.com&sz=256'],
+    notes:[
+      '15 000 km interval across the SUV range.',
+      'Minor and major services alternate.'
+    ],
+    variants:[{ name:'Haval · 15 000 km interval', schedule: genAlt(15000, 150000) }]
+  },
+  {
+    id:'ford', name:'FORD', accent:'#2f7bff', accent2:'#00e5ff',
+    tag:'Every 15 000 km', indicative:true,
+    logo:['https://cdn.simpleicons.org/ford/ffffff',
+          'https://www.google.com/s2/favicons?domain=ford.com&sz=256'],
+    notes:[
+      '15 000 km / 12 month interval on most current models.',
+      'Severe-duty use may require shorter intervals.'
+    ],
+    variants:[{ name:'Ford · 15 000 km interval', schedule: genAlt(15000, 150000) }]
+  },
+  {
+    id:'suzuki', name:'SUZUKI', accent:'#00ffa3', accent2:'#22d3ee',
+    tag:'Every 15 000 km', indicative:true,
+    logo:['https://cdn.simpleicons.org/suzuki/ffffff',
+          'https://www.google.com/s2/favicons?domain=suzuki.com&sz=256',
+          'https://www.google.com/s2/favicons?domain=globalsuzuki.com&sz=256'],
+    notes:[
+      '15 000 km interval across the passenger range.',
+      'Minor and major services alternate.'
+    ],
+    variants:[{ name:'Suzuki · 15 000 km interval', schedule: genAlt(15000, 150000) }]
+  }
+];
+
+/* =========================================================
+   BACKGROUND CANVAS
+   ========================================================= */
+(function(){
+  const cv = document.getElementById('bg');
+  const ctx = cv.getContext('2d');
+  let W, H, parts = [];
+
+  function resize(){
+    W = cv.width = window.innerWidth;
+    H = cv.height = window.innerHeight;
+    build();
+  }
+  function build(){
+    parts = [];
+    const n = Math.min(90, Math.floor(W / 18));
+    for (let i = 0; i < n; i++){
+      parts.push({
+        x: Math.random() * W,
+        y: Math.random() * H,
+        r: Math.random() * 1.5 + 0.35,
+        vy: -(Math.random() * 0.34 + 0.07),
+        vx: (Math.random() - 0.5) * 0.16,
+        a: Math.random() * 0.55 + 0.15
+      });
+    }
+  }
+  function loop(){
+    ctx.clearRect(0, 0, W, H);
+    for (const p of parts){
+      p.x += p.vx; p.y += p.vy;
+      if (p.y < -12){ p.y = H + 12; p.x = Math.random() * W; }
+      if (p.x < -12) p.x = W + 12;
+      if (p.x > W + 12) p.x = -12;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(130,205,255,' + p.a + ')';
+      ctx.fill();
+    }
+    requestAnimationFrame(loop);
+  }
+  window.addEventListener('resize', resize);
+  resize();
+  loop();
+})();
+
+/* =========================================================
+   LOGO LOADER WITH FALLBACK CHAIN
+   ========================================================= */
+function setLogo(img, urls, name){
+  const holder = img.parentElement;
+  holder.classList.remove('no-logo');
+  holder.setAttribute('data-initials', name.slice(0, 2).toUpperCase());
+  img.style.display = '';
+  let i = 0;
+  img.onerror = function(){
+    if (i < urls.length){
+      img.src = urls[i++];
+    } else {
+      img.onerror = null;
+      img.removeAttribute('src');
+      holder.classList.add('no-logo');
+    }
+  };
+  if (urls.length) img.src = urls[i++];
+  else holder.classList.add('no-logo');
+}
+
+/* =========================================================
+   RENDER BRAND GRID
+   ========================================================= */
+const grid = document.getElementById('brandGrid');
+
+grid.innerHTML = BRANDS.map((b, i) => `
+  <button class="brand-card" data-id="${b.id}"
+          style="--accent:${b.accent};--accent2:${b.accent2};animation-delay:${i * 70}ms">
+    <span class="corner tl"></span><span class="corner tr"></span>
+    <span class="corner bl"></span><span class="corner br"></span>
+    <div class="logo-wrap"><img alt="${b.name} logo" /></div>
+    <h3>${b.name}</h3>
+    <p class="tag">${b.tag}</p>
+    <span class="scanline"></span>
+  </button>
+`).join('');
+
+grid.querySelectorAll('.brand-card').forEach(card => {
+  const brand = BRANDS.find(x => x.id === card.dataset.id);
+  setLogo(card.querySelector('img'), brand.logo, brand.name);
+  card.addEventListener('click', () => openBrand(brand));
+});
+
+/* =========================================================
+   BOOT ANIMATION
+   ========================================================= */
+const bootEl = document.getElementById('boot');
+let bootTimer = null;
+
+function playBoot(brand, done){
+  bootEl.style.setProperty('--accent', brand.accent);
+  bootEl.style.setProperty('--accent2', brand.accent2);
+
+  const wrap = bootEl.querySelector('.boot-logo');
+  const img  = wrap.querySelector('img');
+  const ringBox = bootEl.querySelector('.rings');
+
+  setLogo(img, brand.logo, brand.name);
+
+  bootEl.querySelector('.boot-name').textContent = brand.name;
+  bootEl.querySelector('.boot-sub').textContent  = brand.tag.toUpperCase();
+
+  /* restart CSS animations */
+  [wrap, ringBox].forEach(el => { el.style.animation = 'none'; void el.offsetWidth; el.style.animation = ''; });
+
+  bootEl.classList.add('active');
+
+  clearTimeout(bootTimer);
+  bootTimer = setTimeout(() => {
+    bootEl.classList.remove('active');
+    done();
+  }, 1600);
+}
+
+/* =========================================================
+   PANEL
+   ========================================================= */
+const panel = document.getElementById('panel');
+const current = { brand:null, variant:0, filter:'all', lookup:null };
+
+function openBrand(brand){
+  playBoot(brand, () => {
+    buildPanel(brand);
+    panel.classList.add('active');
+    document.body.classList.add('locked');
+    panel.scrollTop = 0;
+  });
+}
+
+function closePanel(){
+  panel.classList.remove('active');
+  document.body.classList.remove('locked');
+}
+
+function buildPanel(brand){
+  current.brand = brand;
+  current.variant = 0;
+  current.filter = 'all';
+  current.lookup = null;
+
+  panel.style.setProperty('--accent', brand.accent);
+  panel.style.setProperty('--accent2', brand.accent2);
+
+  const variantHTML = brand.variants.length > 1 ? `
+    <div class="variant-bar" id="variantBar">
+      ${brand.variants.map((v, i) =>
+        `<button class="vchip ${i === 0 ? 'on' : ''}" data-v="${i}">${v.name}</button>`).join('')}
+    </div>` : '';
+
+  const branchHTML = (brand.branches && brand.branches.length) ? `
+    <div class="block">
+      <h4><span class="dotmark"></span>WORKSHOP HOURS</h4>
+      ${brand.branches.map(br => `
+        <div class="branch">
+          <div class="branch-name">${br.name}</div>
+          <ul>${br.rows.map(r => `<li><span>${r.label}</span><b>${r.h} h</b></li>`).join('')}</ul>
+        </div>`).join('')}
+    </div>` : '';
+
+  panel.innerHTML = `
+    <div class="panel-inner">
+      <div class="panel-top">
+        <button class="back" id="backBtn">◄ ALL MARQUES</button>
+        <div class="brand-head">
+          <div class="head-logo"><img alt="${brand.name} logo" /></div>
+          <div>
+            <h2>${brand.name}</h2>
+            <p>${brand.tag}</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel-body">
+        <aside class="side">
+          <div class="block">
+            <h4><span class="dotmark"></span>NOTES</h4>
+            <ul class="notes">${brand.notes.map(n => `<li>${n}</li>`).join('')}</ul>
+          </div>
+          ${branchHTML}
+          ${brand.indicative ? '<div class="warn">Indicative interval data for this marque — confirm the exact schedule with your dealer.</div>' : ''}
+        </aside>
+
+        <section class="main">
+          ${variantHTML}
+          <div class="controls">
+            <div class="chips" id="chips">
+              ${['all','oil','minor','major','cambelt'].map(f =>
+                `<button class="chip ${f === 'all' ? 'on' : ''}" data-f="${f}">${f.toUpperCase()}</button>`).join('')}
+            </div>
+            <div class="lookup">
+              <input id="kmInput" type="number" min="0" step="1000" placeholder="Current km" />
+              <button id="kmBtn">FIND NEXT</button>
+            </div>
+          </div>
+
+          <div class="banner" id="banner"></div>
+
+          <div class="sched-head"><span>ODOMETER</span><span>SERVICE TYPE</span><span>LOAD</span></div>
+          <div class="sched" id="sched"></div>
+        </section>
+      </div>
+    </div>
+  `;
+
+  setLogo(panel.querySelector('.head-logo img'), brand.logo, brand.name);
+
+  panel.querySelector('#backBtn').addEventListener('click', closePanel);
+
+  const bar = panel.querySelector('#variantBar');
+  if (bar){
+    bar.addEventListener('click', e => {
+      const btn = e.target.closest('.vchip');
+      if (!btn) return;
+      bar.querySelectorAll('.vchip').forEach(c => c.classList.remove('on'));
+      btn.classList.add('on');
+      current.variant = +btn.dataset.v;
+      current.lookup = null;
+      panel.querySelector('#kmInput').value = '';
+      renderSched();
+    });
+  }
+
+  panel.querySelector('#chips').addEventListener('click', e => {
+    const btn = e.target.closest('.chip');
+    if (!btn) return;
+    panel.querySelectorAll('.chip').forEach(c => c.classList.remove('on'));
+    btn.classList.add('on');
+    current.filter = btn.dataset.f;
+    renderSched();
+  });
+
+  const kmInput = panel.querySelector('#kmInput');
+  const runLookup = () => {
+    const val = parseInt(kmInput.value, 10);
+    current.lookup = (isNaN(val) || val < 0) ? null : val;
+    renderSched();
+  };
+  panel.querySelector('#kmBtn').addEventListener('click', runLookup);
+  kmInput.addEventListener('keydown', e => { if (e.key === 'Enter') runLookup(); });
+
+  renderSched();
+}
+
+function renderSched(){
+  const brand = current.brand;
+  if (!brand) return;
+
+  const variant = brand.variants[current.variant];
+  const list = variant.schedule;
+  const schedEl = panel.querySelector('#sched');
+  const banner = panel.querySelector('#banner');
+
+  /* next-due calculation */
+  let next = null;
+  if (current.lookup != null){
+    next = list.find(r => r.km >= current.lookup) || null;
+    if (next){
+      const diff = next.km - current.lookup;
+      const t = TYPE[next.type];
+      banner.innerHTML =
+        `<span class="bk">NEXT DUE</span><b>${fmt(next.km)} km</b> — ` +
+        `<em style="color:${t.color};font-style:normal;font-weight:700">${t.label}</em>` +
+        (next.cambelt ? ` <span class="tagbelt">CAMBELT</span>` : '') +
+        ` · in ${fmt(diff)} km`;
+    } else {
+      banner.innerHTML = `<span class="bk">OUT OF RANGE</span>No listed service beyond the schedule range.`;
+    }
+    banner.classList.add('on');
+  } else {
+    banner.classList.remove('on');
+    banner.innerHTML = '';
+  }
+
+  /* filtering */
+  const rows = list.filter(r => {
+    if (current.filter === 'all') return true;
+    if (current.filter === 'cambelt') return !!r.cambelt;
+    return r.type === current.filter;
+  });
+
+  if (!rows.length){
+    schedEl.innerHTML = `<div class="empty">NO SERVICES MATCH THIS FILTER</div>`;
+    return;
+  }
+
+  schedEl.innerHTML = rows.map((r, i) => {
+    const t = TYPE[r.type];
+    const isNext = next && r.km === next.km;
+    return `
+      <div class="row ${isNext ? 'next' : ''}" style="--c:${t.color};animation-delay:${Math.min(i * 22, 420)}ms">
+        <div class="row-km">${fmt(r.km)}<small>KM</small></div>
+        <div class="row-mid">
+          <span class="row-type">${t.label}</span>
+          ${r.cambelt ? '<span class="tagbelt">CAMBELT</span>' : ''}
+        </div>
+        <div class="row-bar"><i></i></div>
+      </div>`;
+  }).join('');
+}
+
+/* Esc closes the panel */
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && panel.classList.contains('active')) closePanel();
+});
+</script>
+</body>
+</html>
