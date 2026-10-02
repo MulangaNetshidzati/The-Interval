@@ -59,7 +59,7 @@ canvas#bg{position:fixed;inset:0;z-index:0;pointer-events:none}
   font-family:'Orbitron',Arial,Helvetica,sans-serif;
 }
 
-/* ============ TOPBAR ======= */
+/* ============ TOPBAR ============ */
 .topbar{
   position:relative;z-index:5;
   display:flex;justify-content:space-between;align-items:center;gap:14px;
@@ -379,6 +379,11 @@ footer b{color:#7fd8ff}
   color:#ffcb6b;border-radius:12px;padding:12px 15px;font-size:.78rem;
   letter-spacing:.06em;line-height:1.5;
 }
+.info{
+  border:1px solid rgba(34,211,238,.3);background:rgba(34,211,238,.06);
+  color:#7fe5f7;border-radius:12px;padding:12px 15px;font-size:.78rem;
+  letter-spacing:.06em;line-height:1.5;margin-bottom:18px;
+}
 
 .variant-bar{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px}
 .vchip{
@@ -468,6 +473,11 @@ footer b{color:#7fd8ff}
   padding:3px 9px;border-radius:999px;
   color:#ff8fa6;border:1px solid rgba(244,63,94,.5);background:rgba(244,63,94,.12);
 }
+.taginfo{
+  font-size:.56rem;font-weight:700;letter-spacing:.18em;
+  padding:3px 9px;border-radius:999px;
+  color:#7fe5f7;border:1px solid rgba(34,211,238,.5);background:rgba(34,211,238,.1);
+}
 .row-bar{height:3px;border-radius:99px;background:rgba(120,200,255,.1);overflow:hidden}
 .row-bar i{
   display:block;height:100%;width:38%;border-radius:99px;
@@ -481,6 +491,37 @@ footer b{color:#7fd8ff}
   border:1px dashed rgba(120,200,255,.16);border-radius:14px;font-size:.82rem;
 }
 
+/* Dealer network table */
+.dealer-table{width:100%;border-collapse:collapse;font-size:.82rem}
+.dealer-table th{
+  text-align:left;font-family:'Orbitron',sans-serif;font-size:.58rem;
+  letter-spacing:.2em;color:#5f7098;padding:8px 10px;
+  border-bottom:1px solid rgba(120,200,255,.12);
+}
+.dealer-table td{
+  padding:10px;border-bottom:1px solid rgba(120,200,255,.06);
+  color:#a9bcdd;vertical-align:top;
+}
+.dealer-table tr:last-child td{border-bottom:0}
+.dealer-table .d-name{
+  font-weight:700;color:#e7f2ff;display:block;margin-bottom:2px;
+}
+.dealer-table .d-brand{
+  font-size:.68rem;color:var(--accent);letter-spacing:.1em;
+  text-transform:uppercase;font-weight:600;
+}
+.dealer-table .d-hours{
+  font-family:'Orbitron',sans-serif;font-size:.72rem;color:#8fd8ff;
+}
+.dealer-table .d-book{
+  font-size:.72rem;color:#ffcb6b;
+}
+.badge{
+  display:inline-block;font-size:.56rem;font-weight:700;letter-spacing:.14em;
+  padding:2px 8px;border-radius:999px;margin-top:4px;
+  color:#7fe5f7;border:1px solid rgba(34,211,238,.4);background:rgba(34,211,238,.08);
+}
+
 @media(max-width:620px){
   .row{grid-template-columns:96px 1fr;gap:10px;padding:12px 14px}
   .row-bar{display:none}
@@ -488,6 +529,8 @@ footer b{color:#7fd8ff}
   .sched-head span:last-child{display:none}
   .lookup{width:100%}
   .lookup input{flex:1;width:auto}
+  .dealer-table{font-size:.74rem}
+  .dealer-table th,.dealer-table td{padding:7px 6px}
 }
 </style>
 </head>
@@ -499,7 +542,7 @@ footer b{color:#7fd8ff}
 
 <header class="topbar">
   <div class="brandmark"><span class="pulse"></span> THE INTERVAL</div>
-  <div class="status">SYSTEM ONLINE · 9 MARQUES</div>
+  <div class="status">SYSTEM ONLINE · 10 MARQUES</div>
 </header>
 
 <section class="hero">
@@ -529,7 +572,6 @@ footer b{color:#7fd8ff}
 <script>
 /* =========================================================
    1. INLINE SVG LOGOS  (no external files = no 404s)
-   Stylised brand marks drawn with vectors.
    ========================================================= */
 const LOGOS = {
 
@@ -613,6 +655,16 @@ const LOGOS = {
       <path d="M80 26 C62 12 28 16 22 38 C16 60 46 62 60 68 C74 74 76 86 56 90 C38 93 24 86 18 74"
             fill="none" stroke="currentColor" stroke-width="10"
             stroke-linecap="round"/>
+    </svg>`,
+
+  chery: `
+    <svg viewBox="0 0 100 100" role="img" aria-label="Chery">
+      <circle cx="50" cy="50" r="42" fill="none"
+              stroke="currentColor" stroke-width="6"/>
+      <path d="M50 18 L58 38 L80 38 L62 52 L68 74 L50 60 L32 74 L38 52 L20 38 L42 38 Z"
+            fill="none" stroke="currentColor" stroke-width="5"
+            stroke-linejoin="round"/>
+      <circle cx="50" cy="50" r="6" fill="currentColor" opacity="0.35"/>
     </svg>`
 };
 
@@ -675,8 +727,133 @@ function genAlt(step, max, first){
   return rows;
 }
 
+/* Chery — 15 000 km cycle:
+   Minor, Major alternating. Cambelt from 90 000 km. */
+function genChery(max = 180000){
+  const rows = [];
+  let n = 1;
+  for (let km = 15000; km <= max; km += 15000, n++){
+    const type = n % 2 === 1 ? 'minor' : 'major';
+    rows.push({ km, type, cambelt: km % 90000 === 0 });
+  }
+  return rows;
+}
+
 /* =========================================================
-   3. BRAND DATABASE
+   3. DEALER NETWORK DATA
+   ========================================================= */
+const DEALERS = [
+  {
+    name:'Action Ford & Chery Krugersdorp',
+    brands:['Ford','Chery'],
+    days:'Mon–Fri 07:30–17:00 · Sat 08:00–12:30 · Sun Closed',
+    book:'06:30 – 09:00',
+    service:'Service and minor repairs'
+  },
+  {
+    name:'Action Ford Lichtenburg',
+    brands:['Ford','Suzuki','Chery'],
+    days:'Mon–Thu 07:30–17:30 · Fri 07:30–17:00 · Sat 08:00–12:00 · Sun Closed',
+    book:'07:00 – 15:00',
+    service:'Service and minor repairs'
+  },
+  {
+    name:'Action Ford Modimolle',
+    brands:['Ford'],
+    days:'Mon–Fri 07:15–17:00 · Sat 09:00–12:00 · Sun Closed',
+    book:'07:15 – 09:00',
+    service:'Service and minor repairs'
+  },
+  {
+    name:'Action Ford Mokopane',
+    brands:['Ford'],
+    days:'Mon–Fri 07:00–17:00 · Sat Closed · Sun Closed',
+    book:'07:00 – 08:00',
+    service:'Service and minor repairs'
+  },
+  {
+    name:'Action Ford Louis Trichardt',
+    brands:['Ford'],
+    days:'Mon–Fri 07:00–17:00 · Sat 08:00–12:00 · Sun Closed',
+    book:'—',
+    service:'Service and minor repairs'
+  },
+  {
+    name:'Suzuki Mazda Kia Haval Louis Trichardt',
+    brands:['Suzuki','Mazda','Kia','Haval'],
+    days:'Mon–Fri 07:00–17:00 · Sat 08:00–12:00 · Sun Closed',
+    book:'07:00 – 12:00',
+    service:'Service'
+  },
+  {
+    name:'Nissan Mthatha',
+    brands:['Nissan','Haval','GWM','Renault'],
+    days:'Mon–Fri 07:30–17:00 · Sat 09:00–12:00 · Sun Closed',
+    book:'07:00 – 10:00',
+    service:'Service and minor repairs'
+  },
+  {
+    name:'Nissan Tokai',
+    brands:['Nissan'],
+    days:'Mon–Fri 07:30–17:30 · Sat 09:00–13:00 · Sun Closed',
+    book:'07:30 – 09:00',
+    service:'Service and minor repairs'
+  },
+  {
+    name:'IC Auto Roodepoort',
+    brands:['Nissan','Renault'],
+    days:'Mon–Fri 07:30–17:30 · Sat 09:00–12:30 · Sun Closed',
+    book:'07:00 – 09:00',
+    service:'Service and minor repairs'
+  },
+  {
+    name:'IC Auto Kempton Park',
+    brands:['Nissan','Renault','Mahindra'],
+    days:'Mon–Fri 07:30–17:30 · Sat 09:30–12:00 · Sun Closed',
+    book:'07:00 – 09:00',
+    service:'Service and minor repairs',
+    assists:'Mahindra'
+  },
+  {
+    name:'IC Auto Benoni',
+    brands:['Nissan','Renault','Mahindra'],
+    days:'Mon–Fri 07:30–17:30 · Sat 08:00–12:00 · Sun Closed',
+    book:'07:30 – 08:30',
+    service:'Service and minor repairs',
+    assists:'Mahindra'
+  },
+  {
+    name:'Mahindra Randfontein',
+    brands:['Mahindra'],
+    days:'Mon–Thu 08:00–17:30 · Fri 08:00–17:00 · Sat 08:00–12:00 · Sun Closed',
+    book:'07:00 – 09:00',
+    service:'Service and minor repairs'
+  },
+  {
+    name:'Ford Randfontein (Ben Morgenrood)',
+    brands:['Ford'],
+    days:'Mon–Fri 08:00–17:00 · Sat 08:00–12:00 · Sun Closed',
+    book:'07:00 – 09:00',
+    service:'Service and minor repairs'
+  },
+  {
+    name:'Chery Randfontein',
+    brands:['Chery'],
+    days:'Mon–Fri 08:00–17:00 · Sat 08:00–12:00 · Sun Closed',
+    book:'07:00 – 09:00',
+    service:'Service and minor repairs'
+  },
+  {
+    name:'Haval GWM Randfontein',
+    brands:['Haval','GWM'],
+    days:'Mon–Fri 07:30–17:30 · Sat 08:30–12:00 · Sun Closed',
+    book:'07:00 – 09:00',
+    service:'Service and minor repairs'
+  }
+];
+
+/* =========================================================
+   4. BRAND DATABASE
    ========================================================= */
 const BRANDS = [
   {
@@ -834,11 +1011,23 @@ const BRANDS = [
       'Minor and major services alternate.'
     ],
     variants:[{ name:'Suzuki · 15 000 km interval', schedule: genAlt(15000, 150000, 'minor') }]
+  },
+
+  {
+    id:'chery', name:'CHERY', accent:'#c30d23', accent2:'#fbd512',
+    tag:'Every 15 000 km',
+    notes:[
+      'Standard Chery SA interval: every 15 000 km or 12 months.',
+      'Minor services on the odd 15 000 km marks; major services every 30 000 km.',
+      'Cambelt service from 90 000 km — includes cambelt and water pump replacement.',
+      '7-year / 75 000 km service plan included on select models.'
+    ],
+    variants:[{ name:'Chery · 15 000 km interval', schedule: genChery() }]
   }
 ];
 
 /* =========================================================
-   4. BACKGROUND CANVAS
+   5. BACKGROUND CANVAS
    ========================================================= */
 (function(){
   const cv  = document.getElementById('bg');
@@ -885,7 +1074,7 @@ const BRANDS = [
 })();
 
 /* =========================================================
-   5. RENDER BRAND GRID
+   6. RENDER BRAND GRID
    ========================================================= */
 const grid = document.getElementById('brandGrid');
 
@@ -908,7 +1097,7 @@ grid.querySelectorAll('.brand-card').forEach(card => {
 });
 
 /* =========================================================
-   6. BOOT ANIMATION
+   7. BOOT ANIMATION
    ========================================================= */
 const bootEl = document.getElementById('boot');
 let bootTimer = null;
@@ -917,7 +1106,6 @@ function playBoot(brand, done){
   bootEl.style.setProperty('--accent',  brand.accent);
   bootEl.style.setProperty('--accent2', brand.accent2);
 
-  /* Rebuild contents every time so CSS animations restart cleanly */
   bootEl.innerHTML = `
     <div class="boot-inner">
       <div class="rings"><span></span><span></span><span></span></div>
@@ -927,7 +1115,6 @@ function playBoot(brand, done){
       <div class="boot-bar"><i></i></div>
     </div>`;
 
-  /* force reflow so the 'active' animations trigger */
   void bootEl.offsetWidth;
   bootEl.classList.add('active');
 
@@ -939,7 +1126,7 @@ function playBoot(brand, done){
 }
 
 /* =========================================================
-   7. DETAIL PANEL
+   8. DETAIL PANEL
    ========================================================= */
 const panel   = document.getElementById('panel');
 const current = { brand:null, variant:0, filter:'all', lookup:null };
@@ -985,6 +1172,35 @@ function buildPanel(brand){
         </div>`).join('')}
     </div>` : '';
 
+  /* Dealer network table — filter by brand */
+  const dealerRows = DEALERS.filter(d =>
+    d.brands.some(b => b.toUpperCase() === brand.name)
+  );
+  const dealerHTML = dealerRows.length ? `
+    <div class="block">
+      <h4><span class="dotmark"></span>DEALER NETWORK</h4>
+      <table class="dealer-table">
+        <thead>
+          <tr><th>DEALER</th><th>OPENING HOURS</th><th>BOOKING WINDOW</th></tr>
+        </thead>
+        <tbody>
+          ${dealerRows.map(d => `
+            <tr>
+              <td>
+                <span class="d-name">${d.name}</span>
+                <span class="d-brand">${d.brands.join(' · ')}</span>
+                ${d.assists ? `<span class="badge">ASSISTS ${d.assists.toUpperCase()}</span>` : ''}
+              </td>
+              <td class="d-hours">${d.days}</td>
+              <td>
+                <div class="d-book">${d.book}</div>
+                <div style="font-size:.68rem;color:#5f7098;margin-top:3px">${d.service}</div>
+              </td>
+            </tr>`).join('')}
+        </tbody>
+      </table>
+    </div>` : '';
+
   panel.innerHTML = `
     <div class="panel-inner">
       <div class="panel-top">
@@ -1005,6 +1221,7 @@ function buildPanel(brand){
             <ul class="notes">${brand.notes.map(n => `<li>${n}</li>`).join('')}</ul>
           </div>
           ${branchHTML}
+          ${dealerHTML}
           ${brand.indicative
             ? '<div class="warn">Indicative interval data for this marque — confirm the exact schedule with your dealer.</div>'
             : ''}
@@ -1037,7 +1254,6 @@ function buildPanel(brand){
 
   panel.querySelector('#backBtn').addEventListener('click', closePanel);
 
-  /* variant switching */
   const bar = panel.querySelector('#variantBar');
   if (bar){
     bar.addEventListener('click', e => {
@@ -1052,7 +1268,6 @@ function buildPanel(brand){
     });
   }
 
-  /* type filter chips */
   panel.querySelector('#chips').addEventListener('click', e => {
     const btn = e.target.closest('.chip');
     if (!btn) return;
@@ -1062,7 +1277,6 @@ function buildPanel(brand){
     renderSched();
   });
 
-  /* km lookup */
   const kmInput  = panel.querySelector('#kmInput');
   const runLookup = () => {
     const val = parseInt(kmInput.value, 10);
@@ -1084,7 +1298,6 @@ function renderSched(){
   const schedEl = panel.querySelector('#sched');
   const banner  = panel.querySelector('#banner');
 
-  /* ---- next due calculation ---- */
   let next = null;
   if (current.lookup != null){
     next = list.find(r => r.km >= current.lookup) || null;
@@ -1106,7 +1319,6 @@ function renderSched(){
     banner.innerHTML = '';
   }
 
-  /* ---- filtering ---- */
   const rows = list.filter(r => {
     if (current.filter === 'all')     return true;
     if (current.filter === 'cambelt') return !!r.cambelt;
