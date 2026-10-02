@@ -491,7 +491,145 @@ footer b{color:#7fd8ff}
   border:1px dashed rgba(120,200,255,.16);border-radius:14px;font-size:.82rem;
 }
 
-/* Dealer network table */
+/* ============================================================
+   DEALER NETWORK — BIG & BOLD
+   ============================================================ */
+.dealer-section{
+  margin-top:34px;
+  padding:28px clamp(18px,3.5vw,38px) 34px;
+  border-radius:24px;
+  border:1px solid rgba(120,200,255,.18);
+  background:
+    radial-gradient(ellipse at 20% 0%, rgba(34,211,238,.10), transparent 55%),
+    radial-gradient(ellipse at 100% 100%, rgba(139,92,246,.10), transparent 55%),
+    linear-gradient(160deg, rgba(14,22,40,.85), rgba(6,10,20,.9));
+  box-shadow:0 26px 60px -28px rgba(34,211,238,.4);
+  position:relative;
+  overflow:hidden;
+  animation:dealerIn .6s cubic-bezier(.2,.9,.2,1) both;
+}
+@keyframes dealerIn{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
+.dealer-section::before{
+  content:'';
+  position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,transparent,var(--accent),var(--accent2),transparent);
+  opacity:.7;
+}
+.dealer-header{
+  display:flex;align-items:center;justify-content:space-between;
+  gap:18px;flex-wrap:wrap;margin-bottom:22px;
+  padding-bottom:18px;border-bottom:1px solid rgba(120,200,255,.12);
+}
+.dealer-header-left{display:flex;align-items:center;gap:16px}
+.dealer-icon{
+  width:56px;height:56px;flex-shrink:0;
+  border-radius:16px;display:grid;place-items:center;
+  background:linear-gradient(145deg, rgba(34,211,238,.18), rgba(139,92,246,.15));
+  border:1px solid var(--accent);
+  box-shadow:0 0 30px -10px var(--accent), 0 0 20px -12px var(--accent) inset;
+  font-size:1.6rem;
+}
+.dealer-heading{display:flex;flex-direction:column;gap:4px}
+.dealer-heading h3{
+  font-family:'Orbitron',sans-serif;
+  font-size:clamp(1.05rem,2.6vw,1.55rem);
+  font-weight:900;letter-spacing:.18em;
+  background:linear-gradient(120deg,#fff,var(--accent) 70%,var(--accent2));
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.dealer-heading p{
+  font-size:.72rem;letter-spacing:.24em;color:#8ea3c9;
+  font-weight:600;text-transform:uppercase;
+}
+.dealer-count{
+  font-family:'Orbitron',sans-serif;font-size:.66rem;
+  letter-spacing:.22em;font-weight:700;color:var(--accent);
+  padding:8px 16px;border-radius:999px;
+  border:1px solid rgba(34,211,238,.4);
+  background:rgba(34,211,238,.08);
+  box-shadow:0 0 22px -8px var(--accent);
+  white-space:nowrap;
+}
+
+.dealer-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill, minmax(320px, 1fr));
+  gap:18px;
+}
+@media(max-width:520px){.dealer-grid{grid-template-columns:1fr}}
+
+.dealer-card{
+  position:relative;overflow:hidden;
+  padding:20px 20px 18px;
+  border-radius:16px;
+  background:linear-gradient(160deg, rgba(20,32,54,.85), rgba(9,15,28,.9));
+  border:1px solid rgba(120,200,255,.14);
+  transition:transform .35s cubic-bezier(.2,.9,.2,1), border-color .3s, box-shadow .4s;
+}
+.dealer-card::before{
+  content:'';position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(circle at 0% 0%, var(--accent), transparent 55%);
+  opacity:0;transition:opacity .4s;
+}
+.dealer-card:hover{
+  transform:translateY(-6px);
+  border-color:var(--accent);
+  box-shadow:0 24px 50px -22px var(--accent), 0 0 30px -18px var(--accent) inset;
+}
+.dealer-card:hover::before{opacity:.14}
+
+.dealer-card-top{
+  display:flex;justify-content:space-between;align-items:flex-start;
+  gap:14px;margin-bottom:14px;
+}
+.dealer-name{
+  font-family:'Orbitron',sans-serif;
+  font-size:.95rem;font-weight:700;letter-spacing:.06em;
+  color:#eef6ff;line-height:1.35;
+}
+.dealer-brands{
+  display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;
+}
+.dealer-brand-chip{
+  font-size:.62rem;font-weight:700;letter-spacing:.14em;
+  padding:3px 9px;border-radius:999px;
+  color:#04060c;
+  background:linear-gradient(120deg,var(--accent),var(--accent2));
+  text-transform:uppercase;
+  box-shadow:0 0 16px -6px var(--accent);
+}
+
+.dealer-info-row{
+  display:grid;grid-template-columns:auto 1fr;gap:12px 14px;
+  margin-top:6px;padding-top:14px;
+  border-top:1px dashed rgba(120,200,255,.14);
+}
+.dealer-info-icon{
+  font-size:1rem;line-height:1.4;opacity:.9;
+}
+.dealer-info-label{
+  font-size:.58rem;letter-spacing:.22em;font-weight:700;
+  color:#5f7098;text-transform:uppercase;margin-bottom:3px;
+}
+.dealer-info-value{
+  font-size:.86rem;line-height:1.5;color:#c9d6ee;font-weight:500;
+}
+.dealer-info-value.mono{
+  font-family:'Orbitron',sans-serif;font-size:.78rem;
+  color:#8fd8ff;letter-spacing:.03em;
+}
+.dealer-info-value.book{
+  color:#ffcb6b;font-weight:700;letter-spacing:.03em;
+}
+.dealer-assists{
+  display:inline-block;font-size:.58rem;font-weight:700;
+  letter-spacing:.16em;padding:3px 9px;border-radius:999px;
+  color:#7fe5f7;border:1px solid rgba(34,211,238,.5);
+  background:rgba(34,211,238,.1);
+  margin-top:6px;
+}
+
+/* legacy table (kept for fallback) */
 .dealer-table{width:100%;border-collapse:collapse;font-size:.82rem}
 .dealer-table th{
   text-align:left;font-family:'Orbitron',sans-serif;font-size:.58rem;
@@ -503,24 +641,6 @@ footer b{color:#7fd8ff}
   color:#a9bcdd;vertical-align:top;
 }
 .dealer-table tr:last-child td{border-bottom:0}
-.dealer-table .d-name{
-  font-weight:700;color:#e7f2ff;display:block;margin-bottom:2px;
-}
-.dealer-table .d-brand{
-  font-size:.68rem;color:var(--accent);letter-spacing:.1em;
-  text-transform:uppercase;font-weight:600;
-}
-.dealer-table .d-hours{
-  font-family:'Orbitron',sans-serif;font-size:.72rem;color:#8fd8ff;
-}
-.dealer-table .d-book{
-  font-size:.72rem;color:#ffcb6b;
-}
-.badge{
-  display:inline-block;font-size:.56rem;font-weight:700;letter-spacing:.14em;
-  padding:2px 8px;border-radius:999px;margin-top:4px;
-  color:#7fe5f7;border:1px solid rgba(34,211,238,.4);background:rgba(34,211,238,.08);
-}
 
 @media(max-width:620px){
   .row{grid-template-columns:96px 1fr;gap:10px;padding:12px 14px}
@@ -529,8 +649,8 @@ footer b{color:#7fd8ff}
   .sched-head span:last-child{display:none}
   .lookup{width:100%}
   .lookup input{flex:1;width:auto}
-  .dealer-table{font-size:.74rem}
-  .dealer-table th,.dealer-table td{padding:7px 6px}
+  .dealer-header{align-items:flex-start}
+  .dealer-count{align-self:flex-start}
 }
 </style>
 </head>
@@ -680,9 +800,6 @@ const TYPE = {
   cambelt: { label:'CAMBELT SERVICE', color:'#f43f5e' }
 };
 
-/* Nissan — 10 000 km cycle:
-   Oil, Minor, Oil, Major, Oil, Minor, Oil, Major...
-   Cambelt on every 90 000 km. */
 function genNissan(max = 260000){
   const rows = [];
   for (let km = 10000; km <= max; km += 10000){
@@ -697,9 +814,6 @@ function genNissan(max = 260000){
   return rows;
 }
 
-/* Renault — 15 000 km cycle:
-   Oil, Minor, Oil, Major, Oil, Minor, Oil, Major...
-   Cambelt on every 60 000 km. */
 function genRenault(max = 390000){
   const rows = [];
   for (let km = 15000; km <= max; km += 15000){
@@ -714,7 +828,6 @@ function genRenault(max = 390000){
   return rows;
 }
 
-/* Simple alternating generator */
 function genAlt(step, max, first){
   const rows = [];
   let n = 1;
@@ -727,8 +840,6 @@ function genAlt(step, max, first){
   return rows;
 }
 
-/* Chery — 15 000 km cycle:
-   Minor, Major alternating. Cambelt from 90 000 km. */
 function genChery(max = 180000){
   const rows = [];
   let n = 1;
@@ -1145,6 +1256,64 @@ function closePanel(){
   document.body.classList.remove('locked');
 }
 
+/* -------- BIG DEALER NETWORK SECTION -------- */
+function buildDealerHTML(brand){
+  const dealerRows = DEALERS.filter(d =>
+    d.brands.some(b => b.toUpperCase() === brand.name)
+  );
+  if (!dealerRows.length) return '';
+
+  const cards = dealerRows.map(d => {
+    const brandChips = d.brands.map(b =>
+      `<span class="dealer-brand-chip">${b}</span>`).join('');
+    const assistBadge = d.assists
+      ? `<span class="dealer-assists">ASSISTS ${d.assists.toUpperCase()}</span>`
+      : '';
+    return `
+      <article class="dealer-card">
+        <div class="dealer-card-top">
+          <div>
+            <div class="dealer-name">${d.name}</div>
+            <div class="dealer-brands">${brandChips}</div>
+            ${assistBadge}
+          </div>
+        </div>
+        <div class="dealer-info-row">
+          <div class="dealer-info-icon">🕒</div>
+          <div>
+            <div class="dealer-info-label">Opening Hours</div>
+            <div class="dealer-info-value">${d.days}</div>
+          </div>
+          <div class="dealer-info-icon">📅</div>
+          <div>
+            <div class="dealer-info-label">Booking Window</div>
+            <div class="dealer-info-value book">${d.book}</div>
+          </div>
+          <div class="dealer-info-icon">🔧</div>
+          <div>
+            <div class="dealer-info-label">Service Offered</div>
+            <div class="dealer-info-value">${d.service}</div>
+          </div>
+        </div>
+      </article>`;
+  }).join('');
+
+  return `
+    <section class="dealer-section">
+      <div class="dealer-header">
+        <div class="dealer-header-left">
+          <div class="dealer-icon">🏢</div>
+          <div class="dealer-heading">
+            <h3>DEALER NETWORK</h3>
+            <p>${brand.name} · Authorised &amp; Assisting Centres</p>
+          </div>
+        </div>
+        <div class="dealer-count">${dealerRows.length} LOCATION${dealerRows.length === 1 ? '' : 'S'}</div>
+      </div>
+      <div class="dealer-grid">${cards}</div>
+    </section>`;
+}
+
 function buildPanel(brand){
   current.brand   = brand;
   current.variant = 0;
@@ -1172,34 +1341,7 @@ function buildPanel(brand){
         </div>`).join('')}
     </div>` : '';
 
-  /* Dealer network table — filter by brand */
-  const dealerRows = DEALERS.filter(d =>
-    d.brands.some(b => b.toUpperCase() === brand.name)
-  );
-  const dealerHTML = dealerRows.length ? `
-    <div class="block">
-      <h4><span class="dotmark"></span>DEALER NETWORK</h4>
-      <table class="dealer-table">
-        <thead>
-          <tr><th>DEALER</th><th>OPENING HOURS</th><th>BOOKING WINDOW</th></tr>
-        </thead>
-        <tbody>
-          ${dealerRows.map(d => `
-            <tr>
-              <td>
-                <span class="d-name">${d.name}</span>
-                <span class="d-brand">${d.brands.join(' · ')}</span>
-                ${d.assists ? `<span class="badge">ASSISTS ${d.assists.toUpperCase()}</span>` : ''}
-              </td>
-              <td class="d-hours">${d.days}</td>
-              <td>
-                <div class="d-book">${d.book}</div>
-                <div style="font-size:.68rem;color:#5f7098;margin-top:3px">${d.service}</div>
-              </td>
-            </tr>`).join('')}
-        </tbody>
-      </table>
-    </div>` : '';
+  const dealerHTML = buildDealerHTML(brand);
 
   panel.innerHTML = `
     <div class="panel-inner">
@@ -1221,7 +1363,6 @@ function buildPanel(brand){
             <ul class="notes">${brand.notes.map(n => `<li>${n}</li>`).join('')}</ul>
           </div>
           ${branchHTML}
-          ${dealerHTML}
           ${brand.indicative
             ? '<div class="warn">Indicative interval data for this marque — confirm the exact schedule with your dealer.</div>'
             : ''}
@@ -1249,6 +1390,8 @@ function buildPanel(brand){
           <div class="sched" id="sched"></div>
         </section>
       </div>
+
+      ${dealerHTML}
     </div>
   `;
 
