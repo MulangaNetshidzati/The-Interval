@@ -14,13 +14,12 @@
   --bg:#04060c;
   --txt:#dbeafe;
   --muted:#7f92bb;
-  --line:rgba(120,200,255,.14);
   --accent:#22d3ee;
   --accent2:#8b5cf6;
 }
 html{scroll-behavior:smooth}
 body{
-  font-family:'Rajdhani',system-ui,sans-serif;
+  font-family:'Rajdhani',system-ui,-apple-system,sans-serif;
   background:var(--bg);
   color:var(--txt);
   min-height:100vh;
@@ -40,11 +39,27 @@ canvas#bg{position:fixed;inset:0;z-index:0;pointer-events:none}
   mask-image:radial-gradient(ellipse 90% 60% at 50% 0%,#000 15%,transparent 80%);
 }
 @keyframes gridMove{to{background-position:64px 64px,64px 64px}}
-.vignette{position:fixed;inset:0;z-index:1;pointer-events:none;
-  background:radial-gradient(ellipse at 50% 120%,rgba(60,120,255,.14),transparent 60%),
-             radial-gradient(ellipse at 50% -20%,rgba(140,80,255,.12),transparent 55%);}
+.vignette{
+  position:fixed;inset:0;z-index:1;pointer-events:none;
+  background:
+    radial-gradient(ellipse at 50% 120%,rgba(60,120,255,.14),transparent 60%),
+    radial-gradient(ellipse at 50% -20%,rgba(140,80,255,.12),transparent 55%);
+}
 
-/* ============ TOPBAR ============ */
+/* ============ LOGO SIZING ============ */
+.logo-wrap svg,
+.boot-logo svg,
+.head-logo svg{
+  width:100%;height:100%;display:block;
+  overflow:visible;
+}
+.logo-wrap svg text,
+.boot-logo svg text,
+.head-logo svg text{
+  font-family:'Orbitron',Arial,Helvetica,sans-serif;
+}
+
+/* ============ TOPBAR ======= */
 .topbar{
   position:relative;z-index:5;
   display:flex;justify-content:space-between;align-items:center;gap:14px;
@@ -100,7 +115,10 @@ canvas#bg{position:fixed;inset:0;z-index:0;pointer-events:none}
   padding:0 clamp(16px,4vw,48px);margin:26px 0 20px;
   font-family:'Orbitron',sans-serif;font-size:.68rem;letter-spacing:.32em;color:#6fd6ff;
 }
-.section-label::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,rgba(120,200,255,.35),transparent)}
+.section-label::after{
+  content:'';flex:1;height:1px;
+  background:linear-gradient(90deg,rgba(120,200,255,.35),transparent);
+}
 
 .brand-grid{
   position:relative;z-index:5;
@@ -144,8 +162,10 @@ canvas#bg{position:fixed;inset:0;z-index:0;pointer-events:none}
 .brand-card:hover .corner{opacity:1;width:20px;height:20px}
 
 .logo-wrap{
-  position:relative;width:96px;height:96px;display:grid;place-items:center;
+  position:relative;width:96px;height:96px;padding:16px;
+  display:grid;place-items:center;
   border-radius:50%;
+  color:var(--accent);
   background:radial-gradient(circle,rgba(255,255,255,.07),rgba(255,255,255,.01) 70%);
   border:1px solid rgba(120,200,255,.14);
   transition:.4s;
@@ -162,20 +182,13 @@ canvas#bg{position:fixed;inset:0;z-index:0;pointer-events:none}
 }
 .brand-card:hover .logo-wrap::after{opacity:.55}
 @keyframes spin{to{transform:rotate(360deg)}}
-
-.logo-wrap img{
-  width:58px;height:58px;object-fit:contain;
-  filter:drop-shadow(0 0 12px rgba(140,200,255,.5));
+.logo-wrap svg{
+  filter:drop-shadow(0 0 10px rgba(140,200,255,.35));
   transition:transform .4s,filter .4s;
 }
-.brand-card:hover .logo-wrap img{transform:scale(1.1);filter:drop-shadow(0 0 20px var(--accent))}
-.no-logo img{display:none}
-.no-logo::before{
-  content:attr(data-initials);
-  font-family:'Orbitron',sans-serif;font-weight:900;font-size:1.7rem;
-  background:linear-gradient(180deg,#fff,var(--accent));
-  -webkit-background-clip:text;background-clip:text;color:transparent;
-  position:absolute;
+.brand-card:hover .logo-wrap svg{
+  transform:scale(1.08);
+  filter:drop-shadow(0 0 18px var(--accent));
 }
 
 .brand-card h3{
@@ -216,7 +229,7 @@ footer b{color:#7fd8ff}
 /* ============ BOOT OVERLAY ============ */
 .boot{
   position:fixed;inset:0;z-index:100;
-  display:grid;place-items:center;gap:0;
+  display:grid;place-items:center;
   background:radial-gradient(circle at 50% 45%,rgba(10,22,44,.97),rgba(2,4,10,.995));
   opacity:0;pointer-events:none;transition:opacity .38s ease;
 }
@@ -236,18 +249,18 @@ footer b{color:#7fd8ff}
   100%{transform:scale(2.1);opacity:0;border-width:.5px}
 }
 
-.boot-logo{position:relative;width:150px;height:150px;display:grid;place-items:center}
-.boot-logo img{width:110px;height:110px;object-fit:contain}
-.boot.active .boot-logo img{
-  animation:logoPop .95s cubic-bezier(.16,.9,.24,1) both;
-  filter:drop-shadow(0 0 34px var(--accent));
+.boot-logo{
+  position:relative;width:150px;height:150px;padding:24px;
+  display:grid;place-items:center;color:var(--accent);
 }
+.boot.active .boot-logo{animation:logoPop .95s cubic-bezier(.16,.9,.24,1) both}
 @keyframes logoPop{
-  0%{transform:scale(.25) rotate(-32deg);opacity:0;filter:blur(16px) drop-shadow(0 0 0 var(--accent))}
-  55%{transform:scale(1.18) rotate(6deg);opacity:1;filter:blur(0) drop-shadow(0 0 40px var(--accent))}
+  0%{transform:scale(.25) rotate(-32deg);opacity:0;filter:blur(16px)}
+  55%{transform:scale(1.18) rotate(6deg);opacity:1;filter:blur(0)}
   75%{transform:scale(.97) rotate(-2deg)}
-  100%{transform:scale(1) rotate(0);filter:blur(0) drop-shadow(0 0 26px var(--accent))}
+  100%{transform:scale(1) rotate(0);opacity:1;filter:blur(0)}
 }
+.boot-logo svg{filter:drop-shadow(0 0 22px var(--accent))}
 .boot.active .boot-logo::after{
   content:'';position:absolute;inset:0;border-radius:50%;
   background:conic-gradient(from 0deg,transparent 0 70%,var(--accent) 85%,transparent 100%);
@@ -262,9 +275,13 @@ footer b{color:#7fd8ff}
   color:#fff;text-shadow:0 0 26px var(--accent);
 }
 .boot.active .boot-name{animation:typeIn .8s .18s cubic-bezier(.2,.9,.2,1) both}
-@keyframes typeIn{from{letter-spacing:1.2em;opacity:0;filter:blur(8px)}to{letter-spacing:.36em;opacity:1;filter:blur(0)}}
+@keyframes typeIn{
+  from{letter-spacing:1.2em;opacity:0;filter:blur(8px)}
+  to{letter-spacing:.36em;opacity:1;filter:blur(0)}
+}
 .boot-sub{
-  font-size:.7rem;letter-spacing:.4em;color:var(--muted);margin-top:-16px;font-weight:600;
+  font-size:.7rem;letter-spacing:.4em;color:var(--muted);
+  margin-top:-16px;font-weight:600;text-align:center;
 }
 .boot-bar{
   width:min(320px,62vw);height:3px;border-radius:99px;overflow:hidden;
@@ -297,26 +314,33 @@ footer b{color:#7fd8ff}
   border:1px solid rgba(120,200,255,.24);border-radius:999px;
   padding:10px 20px;cursor:pointer;transition:.28s;font-weight:700;
 }
-.back:hover{background:var(--accent);color:#04060c;border-color:var(--accent);box-shadow:0 0 26px -6px var(--accent)}
+.back:hover{
+  background:var(--accent);color:#04060c;border-color:var(--accent);
+  box-shadow:0 0 26px -6px var(--accent);
+}
 
 .brand-head{display:flex;align-items:center;gap:22px;flex-wrap:wrap}
 .head-logo{
-  position:relative;width:96px;height:96px;border-radius:22px;display:grid;place-items:center;
+  position:relative;width:96px;height:96px;padding:20px;
+  border-radius:22px;display:grid;place-items:center;
+  color:var(--accent);
   background:linear-gradient(150deg,rgba(255,255,255,.08),rgba(255,255,255,.015));
   border:1px solid var(--accent);
   box-shadow:0 0 44px -12px var(--accent),0 0 30px -18px var(--accent) inset;
   animation:headIn .7s cubic-bezier(.2,.9,.2,1) both;
 }
 @keyframes headIn{from{transform:scale(.6) rotate(-14deg);opacity:0}to{transform:none;opacity:1}}
-.head-logo img{width:58px;height:58px;object-fit:contain;filter:drop-shadow(0 0 14px var(--accent))}
-.head-logo.no-logo::before{font-size:1.7rem}
+.head-logo svg{filter:drop-shadow(0 0 12px var(--accent))}
 .brand-head h2{
   font-family:'Orbitron',sans-serif;font-size:clamp(1.5rem,4.4vw,2.7rem);
   font-weight:900;letter-spacing:.1em;
   background:linear-gradient(120deg,#fff,var(--accent) 60%,var(--accent2));
   -webkit-background-clip:text;background-clip:text;color:transparent;
 }
-.brand-head p{color:#8ea3c9;font-size:.86rem;letter-spacing:.2em;margin-top:6px;font-weight:600;text-transform:uppercase}
+.brand-head p{
+  color:#8ea3c9;font-size:.86rem;letter-spacing:.2em;margin-top:6px;
+  font-weight:600;text-transform:uppercase;
+}
 
 .panel-body{display:grid;grid-template-columns:minmax(260px,340px) 1fr;gap:28px;align-items:start}
 @media(max-width:900px){.panel-body{grid-template-columns:1fr}}
@@ -335,9 +359,7 @@ footer b{color:#7fd8ff}
   list-style:none;font-size:.9rem;line-height:1.55;color:#a9bcdd;
   padding-left:18px;position:relative;margin-bottom:10px;
 }
-.notes li::before{
-  content:'▸';position:absolute;left:0;color:var(--accent);font-size:.8rem;
-}
+.notes li::before{content:'▸';position:absolute;left:0;color:var(--accent);font-size:.8rem}
 .branch{border-top:1px dashed rgba(120,200,255,.14);padding-top:14px;margin-top:14px}
 .branch:first-of-type{border-top:0;padding-top:0;margin-top:0}
 .branch-name{
@@ -358,7 +380,6 @@ footer b{color:#7fd8ff}
   letter-spacing:.06em;line-height:1.5;
 }
 
-/* variant bar */
 .variant-bar{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px}
 .vchip{
   font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.76rem;
@@ -373,7 +394,6 @@ footer b{color:#7fd8ff}
   color:#04060c;border-color:transparent;box-shadow:0 0 24px -8px var(--accent);
 }
 
-/* controls */
 .controls{display:flex;flex-wrap:wrap;gap:14px;justify-content:space-between;margin-bottom:16px}
 .chips{display:flex;flex-wrap:wrap;gap:8px}
 .chip{
@@ -389,8 +409,8 @@ footer b{color:#7fd8ff}
 .lookup input{
   width:130px;padding:9px 14px;border-radius:10px;font-family:'Rajdhani',sans-serif;
   font-weight:600;font-size:.86rem;letter-spacing:.06em;
-  background:rgba(10,18,34,.85);border:1px solid rgba(120,200,255,.2);color:#e7f2ff;outline:none;
-  transition:.26s;
+  background:rgba(10,18,34,.85);border:1px solid rgba(120,200,255,.2);
+  color:#e7f2ff;outline:none;transition:.26s;
 }
 .lookup input:focus{border-color:var(--accent);box-shadow:0 0 20px -6px var(--accent)}
 .lookup input::placeholder{color:#5f7098}
@@ -500,35 +520,117 @@ footer b{color:#7fd8ff}
 
 <footer>THE INTERVAL · SERVICE PROTOCOL DATABASE · <b>ALWAYS CONFIRM WITH YOUR DEALER</b></footer>
 
-<!-- BOOT ANIMATION -->
-<div class="boot" id="boot">
-  <div class="boot-inner">
-    <div class="rings"><span></span><span></span><span></span></div>
-    <div class="boot-logo"><img alt="" /></div>
-    <div class="boot-name">NISSAN</div>
-    <div class="boot-sub">LOADING PROTOCOL</div>
-    <div class="boot-bar"><i></i></div>
-  </div>
-</div>
+<!-- BOOT ANIMATION (filled dynamically) -->
+<div class="boot" id="boot"></div>
 
 <!-- DETAIL PANEL -->
 <div class="panel" id="panel"></div>
 
 <script>
 /* =========================================================
-   DATA GENERATORS
+   1. INLINE SVG LOGOS  (no external files = no 404s)
+   Stylised brand marks drawn with vectors.
+   ========================================================= */
+const LOGOS = {
+
+  nissan: `
+    <svg viewBox="0 0 100 100" role="img" aria-label="Nissan">
+      <circle cx="50" cy="50" r="40" fill="none" stroke="currentColor" stroke-width="7"/>
+      <rect x="9" y="46.5" width="82" height="7" fill="currentColor"/>
+      <text x="50" y="40" text-anchor="middle" font-size="16"
+            font-weight="700" fill="currentColor" letter-spacing="0.5">NISSAN</text>
+    </svg>`,
+
+  renault: `
+    <svg viewBox="0 0 100 100" role="img" aria-label="Renault">
+      <path d="M50 6 L94 50 L50 94 L6 50 Z" fill="none"
+            stroke="currentColor" stroke-width="8" stroke-linejoin="miter"/>
+      <path d="M50 30 L70 50 L50 70 L30 50 Z" fill="none"
+            stroke="currentColor" stroke-width="6" stroke-linejoin="miter"/>
+    </svg>`,
+
+  mahindra: `
+    <svg viewBox="0 0 100 100" role="img" aria-label="Mahindra">
+      <ellipse cx="50" cy="50" rx="45" ry="30" fill="none"
+               stroke="currentColor" stroke-width="6"/>
+      <path d="M26 62 L26 38 L38 54 L50 38 L62 54 L74 38 L74 62"
+            fill="none" stroke="currentColor" stroke-width="6"
+            stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>`,
+
+  kia: `
+    <svg viewBox="0 0 100 100" role="img" aria-label="Kia">
+      <ellipse cx="50" cy="50" rx="46" ry="29" fill="none"
+               stroke="currentColor" stroke-width="6"/>
+      <text x="50" y="62" text-anchor="middle" font-size="30"
+            font-weight="900" font-style="italic" fill="currentColor"
+            letter-spacing="-1">KIA</text>
+    </svg>`,
+
+  mazda: `
+    <svg viewBox="0 0 100 100" role="img" aria-label="Mazda">
+      <ellipse cx="50" cy="50" rx="46" ry="30" fill="none"
+               stroke="currentColor" stroke-width="6"/>
+      <path d="M18 64 L36 34 L50 50 L64 34 L82 64"
+            fill="none" stroke="currentColor" stroke-width="6"
+            stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>`,
+
+  gwm: `
+    <svg viewBox="0 0 100 100" role="img" aria-label="GWM">
+      <circle cx="50" cy="50" r="42" fill="none"
+              stroke="currentColor" stroke-width="6"/>
+      <circle cx="50" cy="50" r="30" fill="none"
+              stroke="currentColor" stroke-width="2" opacity="0.45"/>
+      <text x="50" y="60" text-anchor="middle" font-size="24"
+            font-weight="900" fill="currentColor" letter-spacing="0">GWM</text>
+    </svg>`,
+
+  haval: `
+    <svg viewBox="0 0 100 100" role="img" aria-label="Haval">
+      <path d="M50 5 L89 21 V52 C89 74 71 89 50 95 C29 89 11 74 11 52 V21 Z"
+            fill="none" stroke="currentColor" stroke-width="6" stroke-linejoin="round"/>
+      <path d="M32 40 V62 M32 51 H44 M44 40 V62"
+            fill="none" stroke="currentColor" stroke-width="6"
+            stroke-linecap="round"/>
+      <text x="62" y="60" text-anchor="middle" font-size="15"
+            font-weight="700" fill="currentColor">V</text>
+    </svg>`,
+
+  ford: `
+    <svg viewBox="0 0 100 100" role="img" aria-label="Ford">
+      <ellipse cx="50" cy="50" rx="46" ry="29" fill="none"
+               stroke="currentColor" stroke-width="6"/>
+      <ellipse cx="50" cy="50" rx="38" ry="22" fill="none"
+               stroke="currentColor" stroke-width="2" opacity="0.4"/>
+      <text x="50" y="63" text-anchor="middle" font-size="30"
+            font-weight="700" font-style="italic" fill="currentColor"
+            font-family="Georgia,serif">Ford</text>
+    </svg>`,
+
+  suzuki: `
+    <svg viewBox="0 0 100 100" role="img" aria-label="Suzuki">
+      <path d="M80 26 C62 12 28 16 22 38 C16 60 46 62 60 68 C74 74 76 86 56 90 C38 93 24 86 18 74"
+            fill="none" stroke="currentColor" stroke-width="10"
+            stroke-linecap="round"/>
+    </svg>`
+};
+
+/* =========================================================
+   2. DATA GENERATORS
    ========================================================= */
 const fmt = n => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
 
 const TYPE = {
-  oil:     { label:'OIL SERVICE',    color:'#22d3ee' },
-  minor:   { label:'MINOR SERVICE',  color:'#34d399' },
-  major:   { label:'MAJOR SERVICE',  color:'#f59e0b' },
-  cambelt: { label:'CAMBELT SERVICE',color:'#f43f5e' }
+  oil:     { label:'OIL SERVICE',     color:'#22d3ee' },
+  minor:   { label:'MINOR SERVICE',   color:'#34d399' },
+  major:   { label:'MAJOR SERVICE',   color:'#f59e0b' },
+  cambelt: { label:'CAMBELT SERVICE', color:'#f43f5e' }
 };
 
-/* Nissan — every 10 000 km
-   odd 10k marks = oil ; 20k beat alternates minor/major ; cambelt every 90 000 km */
+/* Nissan — 10 000 km cycle:
+   Oil, Minor, Oil, Major, Oil, Minor, Oil, Major...
+   Cambelt on every 90 000 km. */
 function genNissan(max = 260000){
   const rows = [];
   for (let km = 10000; km <= max; km += 10000){
@@ -543,8 +645,9 @@ function genNissan(max = 260000){
   return rows;
 }
 
-/* Renault — every 15 000 km
-   odd 15k marks = oil ; 30k beat alternates minor/major ; cambelt every 60 000 km */
+/* Renault — 15 000 km cycle:
+   Oil, Minor, Oil, Major, Oil, Minor, Oil, Major...
+   Cambelt on every 60 000 km. */
 function genRenault(max = 390000){
   const rows = [];
   for (let km = 15000; km <= max; km += 15000){
@@ -560,24 +663,25 @@ function genRenault(max = 390000){
 }
 
 /* Simple alternating generator */
-function genAlt(step, max, first = 'minor'){
+function genAlt(step, max, first){
   const rows = [];
   let n = 1;
   for (let km = step; km <= max; km += step, n++){
-    rows.push({ km, type: n % 2 === 1 ? first : (first === 'minor' ? 'major' : 'minor') });
+    rows.push({
+      km,
+      type: n % 2 === 1 ? first : (first === 'minor' ? 'major' : 'minor')
+    });
   }
   return rows;
 }
 
 /* =========================================================
-   BRAND DATABASE
+   3. BRAND DATABASE
    ========================================================= */
 const BRANDS = [
   {
     id:'nissan', name:'NISSAN', accent:'#ff2d55', accent2:'#38bdf8',
     tag:'Every 10 000 km',
-    logo:['https://cdn.simpleicons.org/nissan/ffffff',
-          'https://www.google.com/s2/favicons?domain=nissan.com&sz=256'],
     notes:[
       'Cambelt service falls on every 90 000 km.',
       'After every 90 000 km the cycle returns to a minor service.',
@@ -587,29 +691,33 @@ const BRANDS = [
     variants:[{ name:'Nissan · 10 000 km interval', schedule: genNissan() }],
     branches:[
       { name:'IC AUTO ROODEPOORT', rows:[
-        {label:'Repair Bookings', h:2}, {label:'Minor Service', h:1.5},
-        {label:'Major Service', h:3}, {label:'Cambelt Service', h:5}
+        {label:'Repair Bookings', h:2},
+        {label:'Minor Service',   h:1.5},
+        {label:'Major Service',   h:3},
+        {label:'Cambelt Service', h:5}
       ]},
       { name:'IC AUTO KEMPTON PARK', rows:[
-        {label:'Minor Service', h:1.5}, {label:'Major Service', h:3},
+        {label:'Minor Service',   h:1.5},
+        {label:'Major Service',   h:3},
         {label:'Cambelt Service', h:5}
       ]},
       { name:'IC AUTO BENONI · Nissan / Datsun', rows:[
-        {label:'Repair Bookings', h:2}, {label:'Minor Service', h:1},
-        {label:'Major Service', h:2}, {label:'Cambelt Service', h:4}
+        {label:'Repair Bookings', h:2},
+        {label:'Minor Service',   h:1},
+        {label:'Major Service',   h:2},
+        {label:'Cambelt Service', h:4}
       ]},
       { name:'NISSAN TOKAI', rows:[
-        {label:'Minor Service 15/45/75/105 km', h:1.6},
-        {label:'Major Service 30/60/120/150 km', h:2},
-        {label:'Major Service 90/180/270 km', h:4}
+        {label:'Minor Service 15/45/75/105 km',   h:1.6},
+        {label:'Major Service 30/60/120/150 km',  h:2},
+        {label:'Major Service 90/180/270 km',     h:4}
       ]}
     ]
   },
+
   {
     id:'renault', name:'RENAULT', accent:'#ffd60a', accent2:'#22d3ee',
     tag:'Every 15 000 km',
-    logo:['https://cdn.simpleicons.org/renault/ffffff',
-          'https://www.google.com/s2/favicons?domain=renault.com&sz=256'],
     notes:[
       'Cambelt service on every 60 000 km.',
       'After every 60 000 km the cycle returns to a minor service.',
@@ -618,24 +726,27 @@ const BRANDS = [
     variants:[{ name:'Renault · 15 000 km interval', schedule: genRenault() }],
     branches:[
       { name:'IC AUTO ROODEPOORT', rows:[
-        {label:'Repair Bookings', h:2}, {label:'Minor Service', h:1},
-        {label:'Major Service', h:2}, {label:'Cambelt Service', h:4}
+        {label:'Repair Bookings', h:2},
+        {label:'Minor Service',   h:1},
+        {label:'Major Service',   h:2},
+        {label:'Cambelt Service', h:4}
       ]},
       { name:'IC AUTO KEMPTON PARK', rows:[
-        {label:'Minor Service', h:1}, {label:'Major Service', h:2},
+        {label:'Minor Service',   h:1},
+        {label:'Major Service',   h:2},
         {label:'Cambelt Service', h:4}
       ]},
       { name:'IC AUTO BENONI', rows:[
-        {label:'Minor Service', h:1}, {label:'Major Service', h:2},
+        {label:'Minor Service',   h:1},
+        {label:'Major Service',   h:2},
         {label:'Cambelt Service', h:4}
       ]}
     ]
   },
+
   {
     id:'mahindra', name:'MAHINDRA', accent:'#ff6a00', accent2:'#ffd60a',
     tag:'Every 2nd service is major',
-    logo:['https://cdn.simpleicons.org/mahindra/ffffff',
-          'https://www.google.com/s2/favicons?domain=mahindra.com&sz=256'],
     notes:[
       'Every 2nd service is a major service.',
       'Intervals differ per model — pick your model above.'
@@ -664,87 +775,78 @@ const BRANDS = [
       ]}
     ]
   },
+
   {
     id:'kia', name:'KIA', accent:'#00e5ff', accent2:'#7c5cff',
     tag:'Every 15 000 km', indicative:true,
-    logo:['https://cdn.simpleicons.org/kia/ffffff',
-          'https://www.google.com/s2/favicons?domain=kia.com&sz=256'],
     notes:[
       'Minor and major services alternate on the 15 000 km beat.',
       'Timing chain / belt inspection typically from 90 000 km.'
     ],
-    variants:[{ name:'Kia · 15 000 km interval', schedule: genAlt(15000, 150000) }]
+    variants:[{ name:'Kia · 15 000 km interval', schedule: genAlt(15000, 150000, 'minor') }]
   },
+
   {
     id:'mazda', name:'MAZDA', accent:'#8b7cff', accent2:'#22d3ee',
     tag:'Every 15 000 km', indicative:true,
-    logo:['https://cdn.simpleicons.org/mazda/ffffff',
-          'https://www.google.com/s2/favicons?domain=mazda.com&sz=256'],
     notes:[
       'Minor and major services alternate every 15 000 km.',
       'SkyActiv engines run a timing chain — no scheduled cambelt.'
     ],
-    variants:[{ name:'Mazda · 15 000 km interval', schedule: genAlt(15000, 150000) }]
+    variants:[{ name:'Mazda · 15 000 km interval', schedule: genAlt(15000, 150000, 'minor') }]
   },
+
   {
     id:'gwm', name:'GWM', accent:'#ff4d6d', accent2:'#ffd60a',
     tag:'Every 10 000 km', indicative:true,
-    logo:['https://cdn.simpleicons.org/gwm/ffffff',
-          'https://www.google.com/s2/favicons?domain=gwm-global.com&sz=256',
-          'https://www.google.com/s2/favicons?domain=gwm.com&sz=256'],
     notes:[
       '10 000 km interval — suited to mixed urban and load-carrying duty.',
       'Minor / major alternate on the 20 000 km beat.'
     ],
-    variants:[{ name:'GWM · 10 000 km interval', schedule: genAlt(10000, 100000) }]
+    variants:[{ name:'GWM · 10 000 km interval', schedule: genAlt(10000, 100000, 'minor') }]
   },
+
   {
     id:'haval', name:'HAVAL', accent:'#c04cff', accent2:'#22d3ee',
     tag:'Every 15 000 km', indicative:true,
-    logo:['https://cdn.simpleicons.org/haval/ffffff',
-          'https://www.google.com/s2/favicons?domain=haval.com&sz=256',
-          'https://www.google.com/s2/favicons?domain=gwm-global.com&sz=256'],
     notes:[
       '15 000 km interval across the SUV range.',
       'Minor and major services alternate.'
     ],
-    variants:[{ name:'Haval · 15 000 km interval', schedule: genAlt(15000, 150000) }]
+    variants:[{ name:'Haval · 15 000 km interval', schedule: genAlt(15000, 150000, 'minor') }]
   },
+
   {
     id:'ford', name:'FORD', accent:'#2f7bff', accent2:'#00e5ff',
     tag:'Every 15 000 km', indicative:true,
-    logo:['https://cdn.simpleicons.org/ford/ffffff',
-          'https://www.google.com/s2/favicons?domain=ford.com&sz=256'],
     notes:[
       '15 000 km / 12 month interval on most current models.',
       'Severe-duty use may require shorter intervals.'
     ],
-    variants:[{ name:'Ford · 15 000 km interval', schedule: genAlt(15000, 150000) }]
+    variants:[{ name:'Ford · 15 000 km interval', schedule: genAlt(15000, 150000, 'minor') }]
   },
+
   {
     id:'suzuki', name:'SUZUKI', accent:'#00ffa3', accent2:'#22d3ee',
     tag:'Every 15 000 km', indicative:true,
-    logo:['https://cdn.simpleicons.org/suzuki/ffffff',
-          'https://www.google.com/s2/favicons?domain=suzuki.com&sz=256',
-          'https://www.google.com/s2/favicons?domain=globalsuzuki.com&sz=256'],
     notes:[
       '15 000 km interval across the passenger range.',
       'Minor and major services alternate.'
     ],
-    variants:[{ name:'Suzuki · 15 000 km interval', schedule: genAlt(15000, 150000) }]
+    variants:[{ name:'Suzuki · 15 000 km interval', schedule: genAlt(15000, 150000, 'minor') }]
   }
 ];
 
 /* =========================================================
-   BACKGROUND CANVAS
+   4. BACKGROUND CANVAS
    ========================================================= */
 (function(){
-  const cv = document.getElementById('bg');
+  const cv  = document.getElementById('bg');
   const ctx = cv.getContext('2d');
   let W, H, parts = [];
 
   function resize(){
-    W = cv.width = window.innerWidth;
+    W = cv.width  = window.innerWidth;
     H = cv.height = window.innerHeight;
     build();
   }
@@ -753,19 +855,20 @@ const BRANDS = [
     const n = Math.min(90, Math.floor(W / 18));
     for (let i = 0; i < n; i++){
       parts.push({
-        x: Math.random() * W,
-        y: Math.random() * H,
-        r: Math.random() * 1.5 + 0.35,
+        x:  Math.random() * W,
+        y:  Math.random() * H,
+        r:  Math.random() * 1.5 + 0.35,
         vy: -(Math.random() * 0.34 + 0.07),
         vx: (Math.random() - 0.5) * 0.16,
-        a: Math.random() * 0.55 + 0.15
+        a:  Math.random() * 0.55 + 0.15
       });
     }
   }
   function loop(){
     ctx.clearRect(0, 0, W, H);
     for (const p of parts){
-      p.x += p.vx; p.y += p.vy;
+      p.x += p.vx;
+      p.y += p.vy;
       if (p.y < -12){ p.y = H + 12; p.x = Math.random() * W; }
       if (p.x < -12) p.x = W + 12;
       if (p.x > W + 12) p.x = -12;
@@ -782,38 +885,17 @@ const BRANDS = [
 })();
 
 /* =========================================================
-   LOGO LOADER WITH FALLBACK CHAIN
-   ========================================================= */
-function setLogo(img, urls, name){
-  const holder = img.parentElement;
-  holder.classList.remove('no-logo');
-  holder.setAttribute('data-initials', name.slice(0, 2).toUpperCase());
-  img.style.display = '';
-  let i = 0;
-  img.onerror = function(){
-    if (i < urls.length){
-      img.src = urls[i++];
-    } else {
-      img.onerror = null;
-      img.removeAttribute('src');
-      holder.classList.add('no-logo');
-    }
-  };
-  if (urls.length) img.src = urls[i++];
-  else holder.classList.add('no-logo');
-}
-
-/* =========================================================
-   RENDER BRAND GRID
+   5. RENDER BRAND GRID
    ========================================================= */
 const grid = document.getElementById('brandGrid');
 
 grid.innerHTML = BRANDS.map((b, i) => `
   <button class="brand-card" data-id="${b.id}"
-          style="--accent:${b.accent};--accent2:${b.accent2};animation-delay:${i * 70}ms">
+          style="--accent:${b.accent};--accent2:${b.accent2};animation-delay:${i * 70}ms"
+          aria-label="${b.name} service intervals">
     <span class="corner tl"></span><span class="corner tr"></span>
     <span class="corner bl"></span><span class="corner br"></span>
-    <div class="logo-wrap"><img alt="${b.name} logo" /></div>
+    <div class="logo-wrap">${LOGOS[b.id] || ''}</div>
     <h3>${b.name}</h3>
     <p class="tag">${b.tag}</p>
     <span class="scanline"></span>
@@ -822,45 +904,44 @@ grid.innerHTML = BRANDS.map((b, i) => `
 
 grid.querySelectorAll('.brand-card').forEach(card => {
   const brand = BRANDS.find(x => x.id === card.dataset.id);
-  setLogo(card.querySelector('img'), brand.logo, brand.name);
   card.addEventListener('click', () => openBrand(brand));
 });
 
 /* =========================================================
-   BOOT ANIMATION
+   6. BOOT ANIMATION
    ========================================================= */
 const bootEl = document.getElementById('boot');
 let bootTimer = null;
 
 function playBoot(brand, done){
-  bootEl.style.setProperty('--accent', brand.accent);
+  bootEl.style.setProperty('--accent',  brand.accent);
   bootEl.style.setProperty('--accent2', brand.accent2);
 
-  const wrap = bootEl.querySelector('.boot-logo');
-  const img  = wrap.querySelector('img');
-  const ringBox = bootEl.querySelector('.rings');
+  /* Rebuild contents every time so CSS animations restart cleanly */
+  bootEl.innerHTML = `
+    <div class="boot-inner">
+      <div class="rings"><span></span><span></span><span></span></div>
+      <div class="boot-logo">${LOGOS[brand.id] || ''}</div>
+      <div class="boot-name">${brand.name}</div>
+      <div class="boot-sub">${brand.tag.toUpperCase()}</div>
+      <div class="boot-bar"><i></i></div>
+    </div>`;
 
-  setLogo(img, brand.logo, brand.name);
-
-  bootEl.querySelector('.boot-name').textContent = brand.name;
-  bootEl.querySelector('.boot-sub').textContent  = brand.tag.toUpperCase();
-
-  /* restart CSS animations */
-  [wrap, ringBox].forEach(el => { el.style.animation = 'none'; void el.offsetWidth; el.style.animation = ''; });
-
+  /* force reflow so the 'active' animations trigger */
+  void bootEl.offsetWidth;
   bootEl.classList.add('active');
 
   clearTimeout(bootTimer);
   bootTimer = setTimeout(() => {
     bootEl.classList.remove('active');
-    done();
+    if (typeof done === 'function') done();
   }, 1600);
 }
 
 /* =========================================================
-   PANEL
+   7. DETAIL PANEL
    ========================================================= */
-const panel = document.getElementById('panel');
+const panel   = document.getElementById('panel');
 const current = { brand:null, variant:0, filter:'all', lookup:null };
 
 function openBrand(brand){
@@ -878,18 +959,19 @@ function closePanel(){
 }
 
 function buildPanel(brand){
-  current.brand = brand;
+  current.brand   = brand;
   current.variant = 0;
-  current.filter = 'all';
-  current.lookup = null;
+  current.filter  = 'all';
+  current.lookup  = null;
 
-  panel.style.setProperty('--accent', brand.accent);
+  panel.style.setProperty('--accent',  brand.accent);
   panel.style.setProperty('--accent2', brand.accent2);
 
   const variantHTML = brand.variants.length > 1 ? `
     <div class="variant-bar" id="variantBar">
       ${brand.variants.map((v, i) =>
-        `<button class="vchip ${i === 0 ? 'on' : ''}" data-v="${i}">${v.name}</button>`).join('')}
+        `<button class="vchip ${i === 0 ? 'on' : ''}" data-v="${i}">${v.name}</button>`
+      ).join('')}
     </div>` : '';
 
   const branchHTML = (brand.branches && brand.branches.length) ? `
@@ -898,7 +980,8 @@ function buildPanel(brand){
       ${brand.branches.map(br => `
         <div class="branch">
           <div class="branch-name">${br.name}</div>
-          <ul>${br.rows.map(r => `<li><span>${r.label}</span><b>${r.h} h</b></li>`).join('')}</ul>
+          <ul>${br.rows.map(r =>
+            `<li><span>${r.label}</span><b>${r.h} h</b></li>`).join('')}</ul>
         </div>`).join('')}
     </div>` : '';
 
@@ -907,7 +990,7 @@ function buildPanel(brand){
       <div class="panel-top">
         <button class="back" id="backBtn">◄ ALL MARQUES</button>
         <div class="brand-head">
-          <div class="head-logo"><img alt="${brand.name} logo" /></div>
+          <div class="head-logo">${LOGOS[brand.id] || ''}</div>
           <div>
             <h2>${brand.name}</h2>
             <p>${brand.tag}</p>
@@ -922,7 +1005,9 @@ function buildPanel(brand){
             <ul class="notes">${brand.notes.map(n => `<li>${n}</li>`).join('')}</ul>
           </div>
           ${branchHTML}
-          ${brand.indicative ? '<div class="warn">Indicative interval data for this marque — confirm the exact schedule with your dealer.</div>' : ''}
+          ${brand.indicative
+            ? '<div class="warn">Indicative interval data for this marque — confirm the exact schedule with your dealer.</div>'
+            : ''}
         </aside>
 
         <section class="main">
@@ -930,7 +1015,8 @@ function buildPanel(brand){
           <div class="controls">
             <div class="chips" id="chips">
               ${['all','oil','minor','major','cambelt'].map(f =>
-                `<button class="chip ${f === 'all' ? 'on' : ''}" data-f="${f}">${f.toUpperCase()}</button>`).join('')}
+                `<button class="chip ${f === 'all' ? 'on' : ''}" data-f="${f}">${f.toUpperCase()}</button>`
+              ).join('')}
             </div>
             <div class="lookup">
               <input id="kmInput" type="number" min="0" step="1000" placeholder="Current km" />
@@ -940,17 +1026,18 @@ function buildPanel(brand){
 
           <div class="banner" id="banner"></div>
 
-          <div class="sched-head"><span>ODOMETER</span><span>SERVICE TYPE</span><span>LOAD</span></div>
+          <div class="sched-head">
+            <span>ODOMETER</span><span>SERVICE TYPE</span><span>LOAD</span>
+          </div>
           <div class="sched" id="sched"></div>
         </section>
       </div>
     </div>
   `;
 
-  setLogo(panel.querySelector('.head-logo img'), brand.logo, brand.name);
-
   panel.querySelector('#backBtn').addEventListener('click', closePanel);
 
+  /* variant switching */
   const bar = panel.querySelector('#variantBar');
   if (bar){
     bar.addEventListener('click', e => {
@@ -959,12 +1046,13 @@ function buildPanel(brand){
       bar.querySelectorAll('.vchip').forEach(c => c.classList.remove('on'));
       btn.classList.add('on');
       current.variant = +btn.dataset.v;
-      current.lookup = null;
+      current.lookup  = null;
       panel.querySelector('#kmInput').value = '';
       renderSched();
     });
   }
 
+  /* type filter chips */
   panel.querySelector('#chips').addEventListener('click', e => {
     const btn = e.target.closest('.chip');
     if (!btn) return;
@@ -974,7 +1062,8 @@ function buildPanel(brand){
     renderSched();
   });
 
-  const kmInput = panel.querySelector('#kmInput');
+  /* km lookup */
+  const kmInput  = panel.querySelector('#kmInput');
   const runLookup = () => {
     const val = parseInt(kmInput.value, 10);
     current.lookup = (isNaN(val) || val < 0) ? null : val;
@@ -991,24 +1080,25 @@ function renderSched(){
   if (!brand) return;
 
   const variant = brand.variants[current.variant];
-  const list = variant.schedule;
+  const list    = variant.schedule;
   const schedEl = panel.querySelector('#sched');
-  const banner = panel.querySelector('#banner');
+  const banner  = panel.querySelector('#banner');
 
-  /* next-due calculation */
+  /* ---- next due calculation ---- */
   let next = null;
   if (current.lookup != null){
     next = list.find(r => r.km >= current.lookup) || null;
     if (next){
       const diff = next.km - current.lookup;
-      const t = TYPE[next.type];
+      const t    = TYPE[next.type];
       banner.innerHTML =
         `<span class="bk">NEXT DUE</span><b>${fmt(next.km)} km</b> — ` +
         `<em style="color:${t.color};font-style:normal;font-weight:700">${t.label}</em>` +
-        (next.cambelt ? ` <span class="tagbelt">CAMBELT</span>` : '') +
+        (next.cambelt ? ' <span class="tagbelt">CAMBELT</span>' : '') +
         ` · in ${fmt(diff)} km`;
     } else {
-      banner.innerHTML = `<span class="bk">OUT OF RANGE</span>No listed service beyond the schedule range.`;
+      banner.innerHTML =
+        `<span class="bk">OUT OF RANGE</span>No listed service beyond the schedule range.`;
     }
     banner.classList.add('on');
   } else {
@@ -1016,9 +1106,9 @@ function renderSched(){
     banner.innerHTML = '';
   }
 
-  /* filtering */
+  /* ---- filtering ---- */
   const rows = list.filter(r => {
-    if (current.filter === 'all') return true;
+    if (current.filter === 'all')     return true;
     if (current.filter === 'cambelt') return !!r.cambelt;
     return r.type === current.filter;
   });
@@ -1029,10 +1119,11 @@ function renderSched(){
   }
 
   schedEl.innerHTML = rows.map((r, i) => {
-    const t = TYPE[r.type];
+    const t      = TYPE[r.type];
     const isNext = next && r.km === next.km;
     return `
-      <div class="row ${isNext ? 'next' : ''}" style="--c:${t.color};animation-delay:${Math.min(i * 22, 420)}ms">
+      <div class="row ${isNext ? 'next' : ''}"
+           style="--c:${t.color};animation-delay:${Math.min(i * 22, 420)}ms">
         <div class="row-km">${fmt(r.km)}<small>KM</small></div>
         <div class="row-mid">
           <span class="row-type">${t.label}</span>
